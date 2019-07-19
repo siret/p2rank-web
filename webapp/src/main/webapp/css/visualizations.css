@@ -3,22 +3,16 @@
 }
 
 .app {
-    position: fixed;
-    top: 52px; /* (navbar) */
-    bottom: 0px;
-    right: 300px;
-    left: 0px;
+    height: calc(100vh - 52px); /* 52px is navbar */
 }
 
 .pocket-list {
-    position: fixed;
-    top: 52px; /* (navbar) */
-    bottom: 0px;
-    right: 0;
-    width: 300px;
-    padding: 15px;
+    height: calc(100vh - 52px); /* 52px is navbar */
     overflow-y: scroll;
-    background: white;
+}
+
+.navbar {
+    margin-bottom: 0px;
 }
 
 .lm-plugin .lm-layout-static, .lm-plugin .lm-layout-scrollable {
