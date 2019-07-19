@@ -53,7 +53,7 @@
                 <div class="form-group">
                     <label for="pdbId" class="col-sm-2 control-label">
                     PDB code
-                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top"
+                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top" data-container="body"
                             title="PrankWeb will download the protein file from PDB.">
                             <i class='glyphicon glyphicon-question-sign' style="color:black;"></i>
                         </a>
@@ -67,8 +67,8 @@
                 <div style="text-align:center;">OR</div>
                 <div class="form-group">
                     <label for="upload-pdb" class="col-sm-2 control-label">PDB file
-                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top"
-                           title="Protein file to analyze.">
+                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top" data-container="body"
+                           title="Upload your own PDB file (e.g. a PDB file of a biologically relevant unit.)">
                             <i class='glyphicon glyphicon-question-sign' style="color:black;"></i>
                         </a>
                     </label>
@@ -79,7 +79,7 @@
                     <div class="col-sm-10 col-sm-offset-2">
                         <div>
                             <b>Restrict to chains</b>
-                                <a class="tooltip-hint" data-toggle="tooltip" data-placement="top"
+                                <a class="tooltip-hint" data-toggle="tooltip" data-placement="top" data-container="body"
                                     title="Optional. Comma separated list of chains to analyze.">
                                     <i class="glyphicon glyphicon-question-sign" style="color:black;"></i>
                                 </a>
@@ -101,7 +101,7 @@
                                 <input id="conservation-checkbox" name="doConservation" type="checkbox"
                                     onclick="doConservationClicked()" checked="checked" style="margin-right: 4px;">
                                     Run conservation analysis
-                                    <a class='tooltip-hint' data-toggle="tooltip" data-placement="top"
+                                    <a class='tooltip-hint' data-toggle="tooltip" data-placement="top" data-container="body"
                                         title="If checked, a model that exploits conservation will be used to classify protein binding sites. If neither MSA nor PDB code is provided, PrankWeb will calculate conservation from MSA of similar proteins.">
                                         <i class='glyphicon glyphicon-question-sign' style="color:black;"></i>
                                     </a>
@@ -112,7 +112,7 @@
                 <div class="form-group">
                     <label id="pdbId_opt_lbl" for="pdbId_opt" class="col-sm-2 control-label">
                         PDB code (optional)
-                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top"
+                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top" data-container="body"
                            title="If PDB code of the uploaded protein is provided, MSA alignment from HSSP database for this protein will be used to calculate the conservation score.">
                             <i class='glyphicon glyphicon-question-sign' style="color:black;"></i>
                         </a>
@@ -124,7 +124,7 @@
                 <div class="form-group">
                     <label for="upload-msas" id="msa_opt_lbl" class="col-sm-2 control-label">
                         MSA files (optional)
-                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top"
+                        <a class='tooltip-hint' data-toggle="tooltip" data-placement="top" data-container="body"
                             title="Provide your custom MSA file and PrankWeb will calculate the conservation scores from that MSA file. Alignments in FASTA formats are supported.">
                             <i class='glyphicon glyphicon-question-sign' style="color:black;"></i>
                         </a>
