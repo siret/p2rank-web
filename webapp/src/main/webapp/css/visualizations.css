@@ -9,7 +9,10 @@
 
 .pocket-list {
     height: calc(100vh - 52px); /* 52px is navbar */
-    overflow-y: scroll;
+    @media (min-width: 992px) {
+        /* Allow only on a small display, 992 is from bootstrap. */
+        overflow-y: scroll;
+    }
 }
 
 .navbar {
@@ -22,6 +25,16 @@
 
 .lm-plugin .lm-layout-top {
     overflow-y: hidden;
+}
+
+
+/* On small devices the LiteMol can span whole display and then 
+ it is not possible to scroll, so we add a strip on the right side */
+.lm-plugin .lm-layout-main {
+    margin-right: 5rem;
+    @media (min-width: 992px) {
+        margin-right: 0rem;
+    }
 }
 
 .control-buttons {
