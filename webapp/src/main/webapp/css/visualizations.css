@@ -32,7 +32,10 @@
  it is not possible to scroll, so we add a strip on the right side */
 .lm-plugin .lm-layout-main {
     margin-right: 5rem;
-    @media (min-width: 992px) {
+}
+
+@media (min-width: 992px) {
+    .lm-plugin .lm-layout-main {
         margin-right: 0rem;
     }
 }
