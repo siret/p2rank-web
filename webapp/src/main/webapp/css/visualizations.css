@@ -4,6 +4,7 @@
 
 .app {
     height: calc(100vh - 52px); /* 52px is navbar */
+    min-height: 638px /* For widescreen devices */
 }
 
 .pocket-list {

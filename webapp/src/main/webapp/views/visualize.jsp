@@ -21,7 +21,7 @@
     </jsp:attribute>
     
     <jsp:body>
-        <div id="sequence-view" class="sequence-view row"/>
+        <div id="sequence-view" class="sequence-view"/>
         <div id="app" class="app col-xs-12 col-md-10" data-input-type="${inputType}" data-input-id="${inputId}"></div>
         <div id="pocket-list" class="pocket-list col-xs-12 col-md-2"/>
         <script>
