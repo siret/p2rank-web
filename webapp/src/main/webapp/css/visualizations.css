@@ -7,10 +7,13 @@
     min-height: 638px /* For widescreen devices */
 }
 
+/* On small screens we want to scroll normaly, but on large
+ we scroll just the pocket-list */
 .pocket-list {
     height: calc(100vh - 52px); /* 52px is navbar */
-    @media (min-width: 992px) {
-        /* Allow only on a small display, 992 is from bootstrap. */
+}
+@media (min-width: 992px) {
+    .pocket-list {
         overflow-y: scroll;
     }
 }
