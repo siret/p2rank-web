@@ -1,3 +1,9 @@
 .gradle/
-build/
 .idea/
+build/
+dist/
+node_modules/
+
+# Build from the LiteMol project
+webapp/src/main/webapp/javascripts/LiteMol-plugin.js
+webapp/src/main/webapp/javascripts/LiteMol-PrankWeb.js

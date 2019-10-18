@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import cz.siret.prank.lib.utils.Utils;
-import cz.siret.prank.webapp.utils.AppSettings;
 import cz.siret.prank.webapp.utils.DataGetter;
 
 @WebServlet(name = "AnalyzeUploadServlet", urlPatterns = "/analyze/upload/*")

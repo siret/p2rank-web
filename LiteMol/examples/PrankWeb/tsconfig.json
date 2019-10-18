@@ -1,0 +1,36 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": false,
+    "declaration": false,
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "lib": [ "es5", "es2015.collection", "dom", "es2015.promise" ],
+    "target": "es5",
+    "jsx": "react",
+    "module": "none",
+    "types": [],
+    "skipDefaultLibCheck": true,
+    "out": "LiteMol-PrankWeb.js"
+  },
+  "files": [
+    "../../dist/js/LiteMol-plugin.d.ts",
+    "../../src/Viewer/Extensions/ParticleColoring/Coloring.ts",
+    "../../src/Viewer/Extensions/ParticleColoring/UI.tsx",
+    
+    "./src/ControlButtons.tsx",
+    "./src/SequenceEntity.ts",    
+    "./src/PredictionEntity.ts",    
+    "./src/SequenceView.tsx" ,
+    "./src/PocketList.tsx" ,   
+    "./src/DataLoader.ts",
+    "./src/App.tsx",
+    "./src/Specification.ts",
+    "./src/App.ts"
+
+    
+  ]
+}

@@ -4,7 +4,8 @@ targetCompatibility = 1.8
 apply plugin: 'war'
 
 war {
-    archiveName 'ROOT.war'
+    archiveFileName = 'p2rank-web.war'
+    destinationDirectory = file('../dist')
 }
 
 task('copy_LiteMol_js', type:Copy) {
@@ -19,6 +20,7 @@ task('copy_LiteMol_js', type:Copy) {
     }
     into 'src/main/webapp/javascripts'
 }
+
 tasks['copy_LiteMol_js'].dependsOn ':LiteMol:gulp_Example-PrankWeb'
 
 task('copy_LiteMol_css', type:Copy) {
@@ -31,51 +33,10 @@ task('copy_LiteMol_css', type:Copy) {
 }
 tasks['copy_LiteMol_css'].dependsOn ':LiteMol:gulp_Example-PrankWeb'
 
-task('copy_p2rank_jar', type:Copy) {
-    // Copy P2Rank jar file
-    from('../p2rank/build/bin/') {
-        include 'p2rank.jar'
-        rename 'p2rank.jar', 'p2rank_slim.jar'
-    }
-    into 'libs'
-}
-tasks['copy_p2rank_jar'].dependsOn ':p2rank:assemble'
-
-
-// Setup copying p2rank distribution to P2RANK_DISTRO path
-task('copy_p2rank_dist', type:Copy) {
-    // Copy P2Rank dist to P2RANK_DIST
-    from '../p2rank/distro/'
-    into "$System.env.P2RANK_DIST"
-}
-tasks['copy_p2rank_dist'].dependsOn ':p2rank:assemble'
-
-// Check that P2RANK_DISTRO env variable is set.
-gradle.taskGraph.whenReady { taskGraph ->
-    logger.error(taskGraph.getAllTasks().toString())
-    if (taskGraph.hasTask(':webapp:copy_p2rank_dist') && System.getenv('P2RANK_DIST') == null) {
-       throw new GradleException("Please export 'P2RANK_DIST' variable, path for p2rank models and configs.")
-    }
-}
-
-compileJava.dependsOn 'copy_p2rank_jar'
-compileJava.dependsOn 'copy_p2rank_dist'
 processResources.dependsOn 'copy_LiteMol_css'
 processResources.dependsOn 'copy_LiteMol_js'
 
-task('deploy', dependsOn: 'war', type:Exec) {
-    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/c', "call ${System.env.JBOSS_HOME}\\bin\\jboss-cli.bat --connect controller=localhost \"deploy --force build\\libs\\ROOT.war\""
-    } else {
-        commandLine "./deploy.sh"
-    }
-    inputs.file "build/libs/ROOT.war"
-    outputs.upToDateWhen {true} // Since there is no output.
-}
-
 dependencies {
-    compile project(':pranklib')
-
     compile group: 'org.biojava', name: 'biojava-core', version: '4.2.12'
     compile 'org.biojava:biojava-structure:4.2.12'
     compile group: 'org.apache.commons', name: 'commons-configuration2', version: '2.1'

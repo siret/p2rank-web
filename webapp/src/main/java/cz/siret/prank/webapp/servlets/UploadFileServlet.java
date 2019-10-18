@@ -1,6 +1,5 @@
 package cz.siret.prank.webapp.servlets;
 
-import org.biojava.nbio.structure.Structure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,6 @@ import javax.servlet.http.Part;
 import cz.siret.prank.lib.utils.BioUtils;
 import cz.siret.prank.lib.utils.Utils;
 import cz.siret.prank.webapp.utils.AppSettings;
-import cz.siret.prank.webapp.utils.DataGetter;
 import cz.siret.prank.webapp.utils.JobRunner;
 import cz.siret.prank.webapp.utils.PrankUtils;
 
