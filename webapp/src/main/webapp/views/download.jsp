@@ -45,7 +45,7 @@
                 datasets. They are available at
                 <a href="https://github.com/rdk/p2rank-datasets" target="_blank">https://github.com/rdk/p2rank-datasets</a>.
                 The conservation pipeline uses <a href="http://swift.cmbi.ru.nl/gv/hssp/" target="_blank">HSSP database</a> as
-                well as <a href="http://www.uniprot.org/downloads target="_blank"">SwissProt</a> and
+                well as <a href="http://www.uniprot.org/downloads" target="_blank">SwissProt</a> and
                 <a href="http://www.uniprot.org/downloads" target="_blank">TrEMBL</a> databases.
             </p>
             <h2 id="projects">Projects</h2>
@@ -55,7 +55,7 @@
                     <h4>PrankWeb</h4>
                     <ul>
                         <li><a href="http://prankweb.cz">Project website</a></li>
-                        <li><a href="https://github.com/jendelel/PrankWebApp" target="_blank">GitHub </a></li>
+                        <li><a href="https://github.com/siret/p2rank-web" target="_blank">GitHub </a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 profile">
@@ -64,7 +64,7 @@
                         <li><a href="https://jcheminf.biomedcentral.com/articles/10.1186/s13321-018-0285-8" target="_blank">
                             Publication</a></li>
                         <li><a href="http://siret.ms.mff.cuni.cz/p2rank" target="_blank">Project website</a></li>
-                        <li><a href="https://github.com/rdk/p2rank" target="_blank">GitHub</a></li>
+                        <li><a href="https://github.com/siret/p2rank" target="_blank">GitHub</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-4 col-xs-12 profile">

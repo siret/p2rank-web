@@ -79,7 +79,7 @@
                     code nor the alignment file is specified, PrankWeb will calculate the
                     conservation score automatically using alignment of similar proteins.
                     For details see the
-                    <a href="/other/thesis.pdf" target="_blank">original thesis.</a></li>
+                    <a href="https://is.cuni.cz/webapps/zzp/detail/189243/41539668" target="_blank">original thesis.</a></li>
             </ol>
             <h2 id="visualization">Visualization</h2>
             <img src="/images/vis.png" class="img-responsive center-block"/>
@@ -202,7 +202,7 @@
                 in both structural and sequence visualizations.</p>
             <h2 id="more-details">More details</h2>
             <p id="thesis">For more technical details of this project, please see
-                <a href="/other/thesis.pdf">the original thesis document.</a></p>
+                <a href="https://is.cuni.cz/webapps/zzp/detail/189243/41539668">the original thesis document.</a></p>
             <div class="footnotes">
                 <hr/>
                 <ol>

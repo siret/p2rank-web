@@ -42,6 +42,23 @@
                 between proteins and small molecules (so called ligands) because most of the currently used drugs are small molecules.
                 While there are several tools that can predict these interactions, they are almost none for their visualization. Thus, we built a new visualization website by combining several protein visualizers together. Since evolutionary homology correlates with binding sites, our web interface also displays homology for comparison. We developed several ways how to calculate homology, and used it to improve detection of protein-ligand binding sites.
                 Here we present PrankWeb, a modern web application for structure and sequence visualization of a protein and its protein-ligand binding sites as well as evolutionary homology. We hope that it will provide a quick and convenient way for scientists to analyze proteins.</p>
+            <h2 id="cite"> Cite </h2>
+            <p> If you use P2Rank online service, please cite relevant papers:
+            <ul>
+                <li>Lukáš Jendele and Radoslav Krivák and Petr Škoda and Marian Novotný and David Hoksza.
+                    <a href="https://doi.org/10.1093/nar/gkz424">PrankWeb: a web server for ligand binding site prediction and visualization</a>.
+                    Nucleic Acids Research. May 2019
+                </li>
+                <li>Radoslav Krivák and David Hoksza.
+                    <a href="https://doi.org/10.1186/s13321-018-0285-8">P2Rank: machine learning based tool for rapid and accurate prediction of ligand binding sites from protein structure</a>.
+                    Journal of Cheminformatics. Aug 2018
+                </li>
+            </ul>
+            <h2> Feedback </h2>
+            <p> We would be happy to hear about your use cases, experiences and ideas/feature requests.
+                Please feel free to raise an issue on a <a href="https://github.com/siret/p2rank/issues">P2Rank GitHub issue tracker</a> (predictions and p2rank related) or
+                <a href="https://github.com/siret/p2rank-web/issues">P2RankWeb GitHub issue tracker</a> (webservice and websites related).
+            </p>
             <h2 id="authors">Authors</h2>
             <div class="row pt-md">
                 <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
