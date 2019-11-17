@@ -59,7 +59,7 @@
             </ul>
             <h2> Feedback </h2>
             <p> We would be happy to hear about your use cases, experiences and ideas/feature requests.
-                Please feel free to raise an issue on a <a href="https://github.com/siret/p2rank/issues">P2Rank GitHub issue tracker</a> (predictions and p2rank related) or
+                Please feel free to raise an issue on a <a href="https://github.com/rdk/p2rank/issues">P2Rank GitHub issue tracker</a> (predictions and p2rank related) or
                 <a href="https://github.com/siret/p2rank-web/issues">P2RankWeb GitHub issue tracker</a> (webservice and websites related).
             </p>
             <h2 id="authors"> Team </h2>
