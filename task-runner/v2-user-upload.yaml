@@ -1,0 +1,11 @@
+template:
+  id: v2-user-upload
+  urlPath: v2-user-upload
+  version: 1
+  allowInputFiles: true
+  createOnGet: false
+  mergeErrOutToStdOut: true
+  newLocationHttpTemplate: http://localhost:8075/analyze/{template}/{task}
+  steps:
+    - name: "echo"
+      command: 'echo "${_.id} : ${_.input} -> ${_.public}"'

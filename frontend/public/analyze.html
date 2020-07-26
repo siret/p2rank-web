@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+    <%= require('html-loader!./partial/google-tag-manager.html') %>
+    <%= require('html-loader!./partial/head.html') %>
+    <!-- Used by Protael. -->
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.11.0/jquery-ui.min.js"></script>
+    <!--  -->
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Local -->
+    <link rel="stylesheet" href="../../assets/css/LiteMol-plugin.css"/>
+    <link rel="stylesheet" href="../../assets/css/prank-web.css">
+    <link rel="stylesheet" href="../../assets/css/protael.css"/>
+    <link rel="stylesheet" href="../../assets/css/visualizations.css"/>
+</head>
+<body class="bg-light">
+<%= require('html-loader!./partial/navigation.html') %>
+<noscript>
+    <strong>You need to enable JavaScript to run this app.</strong>
+</noscript>
+<div id="analyze" class="hide-content">
+    <div id="sequence-view" class="sequence-view"></div>
+    <div id="app" class="app col-xs-12 col-md-10">
+    </div>
+    <div class="pocket-list col-xs-12 col-md-2">
+        <div id="pocket-list"></div>
+        <%= require('html-loader?attributes=false!./partial/footer.html') %>
+    </div>
+</div>
+<div id="progress" class="hide-content">
+    <div class="jumbotron">
+        <div style="text-align: center;" class="spinner">
+            <i style="font-size:48px; color: aqua;" class="fa fa-spinner fa-spin"></i>
+            <br/>
+            <p class="text-center">Please wait, running analysis...</p>
+            <div class="row">
+                <code id="progress-text"
+                      class="col-xs-6 col-xs-offset-3"
+                      style="text-align: left">
+
+                </code>
+            </div>
+        </div>
+    </div>
+    <%= require('html-loader?attributes=false!./partial/footer.html') %>
+</div>
+</body>
+</html>

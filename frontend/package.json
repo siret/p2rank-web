@@ -1,0 +1,44 @@
+{
+  "name": "p2rank-frontend",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "dev": "node server/server.develop.js",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx --ignore-path .gitignore . --fix",
+    "build": "cross-env NODE_ENV=production webpack --config build/webpack.production.js"
+  },
+  "dependencies": {
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.9.4",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "copy-webpack-plugin": "^5.1.1",
+    "core-js": "^3.6.4",
+    "cross-env": "^7.0.2",
+    "express-http-proxy": "^1.6.0",
+    "html-webpack-plugin": "^4.0.4",
+    "litemol": "^2.4.2",
+    "mini-css-extract-plugin": "^0.9.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "react": "15.6.1",
+    "ts-loader": "^6.2.2",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-merge": "^4.2.2",
+    "winston": "^3.2.1",
+    "yaml": "^1.9.2"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^25.2.4",
+    "eslint": "^6.8.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-jest": "^23.8.2",
+    "eslint-plugin-react": "^7.19.0",
+    "express": "^4.17.1",
+    "html-loader": "^1.1.0",
+    "webpack-dev-middleware": "^3.7.2",
+    "webpack-hot-middleware": "^2.25.0"
+  }
+}

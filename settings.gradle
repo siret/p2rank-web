@@ -1,2 +1,2 @@
-rootProject.name = "PrankWeb"
-include "webapp", "pranklib", "LiteMol", "p2rank"
+rootProject.name = "p2rank-web"
+include "frontend","protein-utils"

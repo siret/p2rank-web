@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%= require('html-loader!./partial/google-tag-manager.html') %>
+    <%= require('html-loader!./partial/head.html') %>
+    <link rel="stylesheet" href="./assets/css/shared.css"/>
+</head>
+<body class="bg-light">
+<%= require('html-loader!./partial/navigation.html') %>
+<div class="container">
+    <h2 id="about"> About </h2>
+    <p>
+        Proteins are fundamental building blocks of all living organisms. They
+        perform their function by binding to other molecules. This project deals
+        with interactions between proteins and small molecules (so called
+        ligands) because most of the currently used drugs are small molecules.
+        While there are several tools that can predict these interactions, they
+        are almost none for their visualization. Thus, we built a new
+        visualization website by combining several protein visualizers together.
+        Since evolutionary homology correlates with binding sites, our web
+        interface also displays homology for comparison. We developed several
+        ways how to calculate homology, and used it to improve detection of
+        protein-ligand binding sites. Here we present PrankWeb, a modern web
+        application for structure and sequence visualization of a protein and
+        its protein-ligand binding sites as well as evolutionary homology. We
+        hope that it will provide a quick and convenient way for scientists to
+        analyze proteins.
+    </p>
+
+    <h2 id="p2rank"> Underlying method </h2>
+    <p>PrankWeb is web interface based on P2Rank standalone method. For
+        batch-processing, it is recommended to download standalone version (
+        <a href="http://siret.ms.mff.cuni.cz/p2rank"
+           target="_blank">link
+        </a>
+        ) of P2Rank and run experiments locally.
+    </p>
+
+    <h2 id="data"> Data </h2>
+    <p>
+        PrankWeb classification model has been trained and validated on publicly
+        available datasets. They are available at
+        <a href="https://github.com/rdk/p2rank-datasets" target="_blank">
+            https://github.com/rdk/p2rank-datasets
+        </a>.
+    </p>
+
+    <h2 id="citing"> Citing </h2>
+    <p> If you use P2Rank online service, please cite:
+    <ul>
+        <li>Lukáš Jendele and Radoslav Krivák and Petr Škoda and Marian Novotný
+            and David Hoksza.
+            <a href="https://doi.org/10.1093/nar/gkz424">PrankWeb: a web server
+                for ligand binding site prediction and visualization</a>.
+            Nucleic Acids Research. May 2019
+        </li>
+        <li>Radoslav Krivák and David Hoksza.
+            <a href="https://doi.org/10.1186/s13321-018-0285-8">P2Rank: machine
+                learning based tool for rapid and accurate prediction of ligand
+                binding sites from protein structure</a>.
+            Journal of Cheminformatics. Aug 2018
+        </li>
+    </ul>
+
+    <h2 id="authors">Authors</h2>
+    <div class="row pt-md">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
+            <div class="img-box">
+                <img src="./assets/images/jendelel.jpg">
+            </div>
+            <h3>Lukas Jendele</h3>
+            <p>Faculty of Mathematics and Physics, Charles University</p>
+            <p>Department of Computer Science, ETH Zurich</p>
+            <p><span class="glyphicon glyphicon-envelope"></span> lukas.jendele
+                (at)
+                gmail.com</p>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
+            <div class="img-box">
+                <img src="./assets/images/hokszad.jpg">
+            </div>
+            <h3>David Hoksza</h3>
+            <p>Faculty of Mathematics and Physics, Charles University</p>
+            <p>Luxembourg Centre for Systems Biomedicine, University of
+                Luxembourg</p>
+            <p><span class="glyphicon glyphicon-envelope"></span>
+                david.hoksza (at) mff.cuni.cz </p>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
+            <div class="img-box">
+                <img src="./assets/images/krivakr.jpg">
+            </div>
+            <h3>Radoslav Krivák</h3>
+            <p>Faculty of Mathematics and Physics, Charles University</p>
+            <p><span class="glyphicon glyphicon-envelope"></span>
+                rkrivak (at) gmail.com </p>
+        </div>
+        <div class="clearfix visible-md-block visible-lg-block"></div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
+            <div class="img-box">
+                <img src="./assets/images/skodap.jpg">
+            </div>
+            <h3>Petr Škoda</h3>
+            <p>Faculty of Mathematics and Physics, Charles University</p>
+            <p><span class="glyphicon glyphicon-envelope"></span>
+                skoda (at) ksi.ms.mff.cuni.cz </p>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 profile">
+            <div class="img-box">
+                <img src="./assets/images/novotnym.jpg">
+            </div>
+            <h3>Marian Novotný</h3>
+            <p>Faculty of Science, Charles University</p>
+            <p><span class="glyphicon glyphicon-envelope"></span>
+                marian.novotny (at) natur.cuni.cz </p>
+        </div>
+    </div>
+</div>
+<%= require('html-loader?attributes=false!./partial/footer.html') %>
+</body>
+</html>

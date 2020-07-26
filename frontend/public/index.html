@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%= require("html-loader!./partial/google-tag-manager.html") %>
+    <%= require("html-loader!./partial/head.html") %>
+    <link rel="stylesheet" href="./assets/css/shared.css"/>
+</head>
+<body class="bg-light">
+<%= require("html-loader!./partial/navigation.html") %>
+<div class="container jumbotron" style="padding-top: 0px">
+    <h2 class="text-center">
+        PrankWeb: Ligand Binding Site Prediction</h2>
+    <div style="padding-bottom: 10px; width: 75%; margin-left: 12%;">
+        P2Rank is a novel machine learning-based method for prediction of
+        ligand binding sites from protein structure.
+    </div>
+    <form class="form-horizontal" onsubmit="event.preventDefault(); return false;">
+        <div class="panel panel-success" style="width:75%; margin-left:12%">
+            <div class="panel-heading">
+                Please upload your pdb protein file or enter PBD ID.
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="pdbId" class="col-sm-2 control-label">
+                        PDB code
+                        <a class="tooltip-hint" data-toggle="tooltip"
+                           data-placement="top"
+                           data-container="body"
+                           title="PrankWeb will download the protein file from PDB.">
+                            <i class="glyphicon glyphicon-question-sign" style="color:black;"></i>
+                        </a>
+                    </label>
+                    <div class="col-sm-10" style="padding-bottom:10px">
+                        <input id="pdbId"
+                               type="text"
+                               placeholder="2SRC"
+                               class="form-control"
+                               oninput="P2rankWeb.doConservationClicked()"
+                               onkeyup="P2rankWeb.updateChainSelector()"/>
+                    </div>
+                    <div id="chain-selector"
+                         class="col-sm-10 col-sm-offset-2"></div>
+                </div>
+                <div style="text-align:center;">OR</div>
+                <div class="form-group">
+                    <label for="upload-pdb" class="col-sm-2 control-label">PDB
+                        file
+                        <a class="tooltip-hint" data-toggle="tooltip"
+                           data-placement="top"
+                           data-container="body"
+                           title="Upload your own PDB file (e.g. a PDB file of a biologically relevant unit.)">
+                            <i class="glyphicon glyphicon-question-sign" style="color:black;"></i>
+                        </a>
+                    </label>
+                    <div class="col-sm-10">
+                        <input id="upload-pdb" name="pdbFile" accept=".pdb"
+                               type="file"
+                               oninput="P2rankWeb.doConservationClicked()"/>
+                    </div>
+                    <div class="col-sm-10 col-sm-offset-2">
+                        <div>
+                            <b>Restrict to chains</b>
+                            <a class="tooltip-hint" data-toggle="tooltip"
+                               data-placement="top"
+                               data-container="body"
+                               title="Optional. Comma separated list of chains to analyze.">
+                                <i class="glyphicon glyphicon-question-sign" style="color:black;"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <input id="fileChains"
+                                   type="text"
+                                   placeholder="A,B"
+                                   class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-success" style="width:75%; margin-left:12%">
+            <div class="panel-heading">Conservation analysis</div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label>
+                                <input id="conservation-checkbox"
+                                       name="doConservation"
+                                       type="checkbox"
+                                       onclick="P2rankWeb.doConservationClicked()"
+                                       checked="checked"
+                                       style="margin-right: 4px;">
+                                Run conservation analysis
+                                <a class="tooltip-hint" data-toggle="tooltip"
+                                   data-placement="top" data-container="body"
+                                   title="If checked, a model that exploits conservation will be used to classify protein binding sites. If neither MSA nor PDB code is provided, PrankWeb will calculate conservation from MSA of similar proteins.">
+                                    <i class="glyphicon glyphicon-question-sign" style="color:black;"></i>
+                                </a>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label id="pdbId_opt_lbl" for="pdbId_opt"
+                           class="col-sm-2 control-label">
+                        PDB code (optional)
+                        <a class="tooltip-hint" data-toggle="tooltip"
+                           data-placement="top"
+                           data-container="body"
+                           title="If PDB code of the uploaded protein is provided, MSA alignment from HSSP database for this protein will be used to calculate the conservation score.">
+                            <i class="glyphicon glyphicon-question-sign" style="color:black;">
+                            </i>
+                        </a>
+                    </label>
+                    <div class="col-sm-10">
+                        <input type="text" id="pdbId_opt" class="form-control"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="upload-msas" id="msa_opt_lbl"
+                           class="col-sm-2 control-label">
+                        MSA files (optional)
+                        <a class="tooltip-hint" data-toggle="tooltip"
+                           data-placement="top"
+                           data-container="body"
+                           title="Provide your custom MSA file and PrankWeb will calculate the conservation scores from that MSA file. Alignments in FASTA formats are supported.">
+                            <i class="glyphicon glyphicon-question-sign" style="color:black;">
+                            </i>
+                        </a>
+                    </label>
+                    <div class="col-sm-10">
+                        <input id="upload-msas" name="msaFiles" type="file" accept=".fasta, .aln" multiple/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-9 col-sm-2">
+                <button id="pdbUploadSubmit" class="btn btn-default">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<%= require("html-loader?attributes=false!./partial/footer.html") %>
+</body>
+</html>

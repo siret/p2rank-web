@@ -1,0 +1,13 @@
+# Set the default behavior for all files.
+* text auto
+
+# Set on checkout.
+*.csv text eol=crlf
+
+# Binary files.
+*.jpg binary
+*.png binary
+
+*.eot binary
+*.ttf binary
+*.woff2 binary

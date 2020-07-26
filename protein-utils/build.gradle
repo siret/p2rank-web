@@ -1,0 +1,38 @@
+apply plugin: 'java'
+apply plugin: 'checkstyle'
+apply plugin: 'application'
+
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
+
+jar {
+    archiveName = 'p2rank-properties.jar'
+    destinationDir = file('../dist')
+}
+
+dependencies {
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.28'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'ch.qos.logback.contrib', name: 'logback-json-classic', version: '0.1.5'
+    implementation group: 'ch.qos.logback.contrib', name: 'logback-jackson', version: '0.1.5'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.8'
+    implementation (group: 'org.biojava', name: 'biojava-structure', version: '5.3.0') {
+        exclude group: 'org.apache.logging.log4j', module: 'log4j-slf4j-impl'
+    }
+    implementation group: 'com.univocity', name: 'univocity-parsers', version: '2.8.4'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.6.1'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.6.1'
+    testImplementation group: 'com.tngtech.archunit', name: 'archunit', version: '0.13.1'
+    testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit5-api', version: '0.13.1'
+    testImplementation group: 'com.tngtech.archunit', name: 'archunit-junit5-engine', version: '0.13.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+application {
+    mainClassName = 'cz.siret.protein.utils.ApplicationEntry'
+}
