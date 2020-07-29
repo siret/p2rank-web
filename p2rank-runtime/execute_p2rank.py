@@ -33,10 +33,9 @@ import Bio.PDB
 
 import conservation
 
-# "/data/conservation/code/protein-utils/bin/protein-utils"
 PROTEIN_UTILS_CMD = os.environ["PROTEIN_UTILS_CMD"]
 
-HSSP_DATABASE_DIR = os.environ["HSSP_DATABASE_DIR"]
+HSSP_DATABASE_DIR = os.environ["HSSPTDB"]
 
 
 def _read_arguments() -> typing.Dict[str, str]:
@@ -104,7 +103,7 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     result_path = os.path.join(arguments["output"], "structure.pdb")
     if chains is None or len(chains) == 0:
         logging.info("Using whole structure file.")
-        shutil.move(structure_file, result_path)
+        shutil.copy(structure_file, result_path)
         return result_path, available_chains
 
     requested_chains = {item for item in chains.split(",") if item}
@@ -126,14 +125,14 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
 
 
 def prepare_raw_structure_file(arguments, structure, structure_file: str):
-    if "code" in structure:
+    if structure.get("code", None) is not None:
         url = "https://files.rcsb.org/download/" \
               + structure["code"] \
               + ".pdb"
         download(url, structure_file)
-    elif "file" in structure:
+    elif structure.get("file", None) is not None:
         input_path = os.path.join(arguments["input"], structure["file"])
-        shutil.move(input_path, structure_file)
+        shutil.copy(input_path, structure_file)
     else:
         raise Exception("Missing structure file information.")
 
@@ -180,7 +179,8 @@ def prepare_conservation(
             conservation_options, arguments["working"], chains)
     elif conservation_options.get("msaFile", None) is not None:
         return prepare_conservation_from_msa(
-            chains, configuration, arguments["input"], arguments["working"])
+            chains, conservation_options,
+            arguments["input"], arguments["working"])
     else:
         return compute_from_structure(structure_file, chains, arguments)
 
@@ -191,12 +191,21 @@ def prepare_conservation_from_hssp(
     hssp_code = conservation_options["hssp"]
     result = {}
     for chain in chains:
-        file_name = f"{hssp_code}_{chain}.scores"
-        source_file = os.path.join(HSSP_DATABASE_DIR, file_name)
-        target_file = os.path.join(working_dir, file_name)
-        shutil.copy(source_file, target_file)
+        source_file = os.path.join(
+            HSSP_DATABASE_DIR,
+            f"{hssp_code}{chain}.hssp.fasta.scores.gz")
+        target_file = os.path.join(
+            working_dir,
+            f"structure_{chain}.score")
+        gunzip_file(source_file, target_file)
         result[chain] = target_file
     return result
+
+
+def gunzip_file(source: str, target: str):
+    with gzip.open(source, "rb") as input_stream, \
+            open(target, "wb") as output_stream:
+        output_stream.writelines(input_stream)
 
 
 def prepare_conservation_from_msa(
@@ -208,11 +217,8 @@ def prepare_conservation_from_msa(
             f" but {len(chains)} were given.")
     chain = next(iter(chains))
     msa_file = os.path.join(input_dir, options["msaFile"])
-    working_dir = os.path.join(working_root_dir, f"conservation{chain}")
-    os.makedirs(working_dir, exist_ok=True)
     target_file = os.path.join(working_root_dir, f"structure_{chain}.score")
-    conservation.compute_conservation(
-        msa_file, working_dir, target_file)
+    conservation.compute_jensen_shannon_divergence(msa_file, target_file)
     return {chain: target_file}
 
 
@@ -261,16 +267,16 @@ def execute_p2rank(
 
     # Prepare command.
     output_dir = os.path.join(arguments["working"], "p2rank-output")
-    p2rank_exec = os.path.join(arguments['p2rank'], "prank")
     p2rank_config = os.path.join(
-        arguments['p2rank'], "config",
+        arguments["p2rank"], "config",
         select_p2rank_configuration(configuration))
 
-    command = f"{p2rank_exec} predict " \
+    command = f"./p2rank.sh predict " \
               f"-c {p2rank_config} " \
               f"-threads 1 " \
               f"-f {structure_file} " \
-              f"-o {output_dir}"
+              f"-o {output_dir} " \
+              f"--log_to_console 1"
 
     execute_command(command)
 

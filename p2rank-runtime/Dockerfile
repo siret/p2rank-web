@@ -36,7 +36,7 @@ RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.
  && cd .. \
  && tar -xf muscle3.8.31_i86linux64.tar.gz \
  && tar -xf conservation_code.tar.gz \
- && mv conservation_code
+ && mv conservation_code \
  && rm *.gz
 
 # p2rank
@@ -54,11 +54,10 @@ RUN wget https://github.com/rdk/p2rank/releases/download/2.1/p2rank_2.1.tar.gz \
 # final setup
 
 ENV BLASTDB="/data/conservation/blast-database/"
+ENV HSSPTDB="/data/conservation/hssp/"
+
 ENV JENSE_SHANNON_DIVERGANCE_DIR="/opt/conservation/jense_shannon_divergence/"
 ENV PSIBLAST_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/psiblast"
 ENV BLASTDBCMD_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/blastdbcmd"
 ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
 ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
-
-VOLUME ["/data/blast-database"]
-
