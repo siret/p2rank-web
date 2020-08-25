@@ -4,7 +4,7 @@ WORKDIR /opt/p2rank/frontend
 
 COPY ./frontend/ ./
 
-RUN npm install && npm run build
+RUN npm ci && npm run build
 
 FROM nginx:1.19.1
 
