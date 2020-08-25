@@ -10,10 +10,10 @@
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Local -->
-    <link rel="stylesheet" href="../../assets/css/LiteMol-plugin.css"/>
-    <link rel="stylesheet" href="../../assets/css/prank-web.css">
-    <link rel="stylesheet" href="../../assets/css/protael.css"/>
-    <link rel="stylesheet" href="../../assets/css/visualizations.css"/>
+    <link rel="stylesheet" href="./assets/css/LiteMol-plugin.css"/>
+    <link rel="stylesheet" href="./assets/css/prank-web.css">
+    <link rel="stylesheet" href="./assets/css/protael.css"/>
+    <link rel="stylesheet" href="./assets/css/visualizations.css"/>
 </head>
 <body class="bg-light">
 <%= require('html-loader!./partial/navigation.html') %>
@@ -29,20 +29,30 @@
         <%= require('html-loader?attributes=false!./partial/footer.html') %>
     </div>
 </div>
-<div id="progress" class="hide-content">
-    <div class="jumbotron">
-        <div style="text-align: center;" class="spinner">
-            <i style="font-size:48px; color: aqua;" class="fa fa-spinner fa-spin"></i>
+<div id="progress" class="jumbotron hide-content"
+     style="text-align: center;">
+    <div id="requestFailed">
+        <p class="text-center" id="requestFailedText">
+        </p>
+    </div>
+    <div id="running">
+        <i style="font-size:48px; color: aqua;" class="fa fa-spinner fa-spin"></i>
+        <br/>
+        <p class="text-center">Please wait, running analysis...</p>
+    </div>
+    <div id="failed" class="hide-content">
+        <p class="text-center">
+            Execution failed, please see the log bellow for more details.
             <br/>
-            <p class="text-center">Please wait, running analysis...</p>
-            <div class="row">
-                <code id="progress-text"
-                      class="col-xs-6 col-xs-offset-3"
-                      style="text-align: left">
-
-                </code>
-            </div>
-        </div>
+            If you have any questions, please feel to create a github
+            <a href="https://github.com/siret/p2rank-web/issues">issue</a>.
+        </p>
+    </div>
+    <div id="stdout" class="row" style="margin: 0;">
+        <code id="progress-text"
+              class="col-12 col-lg-10 col-lg-offset-1 col-xl-8 col-xl-offset-2"
+              style="text-align: left">
+        </code>
     </div>
     <%= require('html-loader?attributes=false!./partial/footer.html') %>
 </div>

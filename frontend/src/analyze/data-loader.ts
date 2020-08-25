@@ -6,6 +6,7 @@ import {
   ParseAndCreatePrediction,
 } from "./prediction-entity";
 import {SequenceListEntity, CreateSequence} from "./sequence-entity";
+import {getApiEndpoint} from "./configuration";
 
 export interface PrankData {
   model: LiteMol.Bootstrap.Entity.Molecule.Model;
@@ -103,11 +104,11 @@ function initColorMapping(
 }
 
 export function loadData(
-  plugin: LiteMol.Plugin.Controller, database: string, inputId: string) {
-  //
+  plugin: LiteMol.Plugin.Controller, database: string, inputId: string
+) {
   return new LiteMol.Promise<PrankData>((accept, reject) => {
     plugin.clear();
-    const baseUrl: string = `../../api/${database}/${inputId}/public`;
+    const baseUrl: string = getApiEndpoint(database, inputId) + "/public";
     let pdbUrl: string = `${baseUrl}/structure.pdb`;
     let seqUrl: string = `${baseUrl}/sequence.json`;
     let predUrl: string = `${baseUrl}/prediction.json`;

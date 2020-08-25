@@ -7,7 +7,6 @@ targetCompatibility = JavaVersion.VERSION_11
 
 jar {
     archiveName = 'p2rank-properties.jar'
-    destinationDir = file('../dist')
 }
 
 dependencies {
@@ -35,4 +34,19 @@ test {
 
 application {
     mainClassName = 'cz.siret.protein.utils.ApplicationEntry'
+}
+
+installDist {
+    into "${project.rootDir}/dist"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url 'https://maven.repository.redhat.com/nexus/content/repositories/releases/'
+    }
+    maven {
+        url 'https://maven.repository.redhat.com/nexus/content/repositories/thirdparty-releases/'
+    }
 }

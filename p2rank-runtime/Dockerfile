@@ -1,25 +1,59 @@
+FROM debian:buster-20200607 as protein-utils-build
+
+RUN apt-get update \
+ && apt-get -y install openjdk-11-jdk
+
+WORKDIR /opt/protein-utils
+COPY ./protein-utils ./
+
+RUN chmod +x ./gradlew && ./gradlew installDist
+
+FROM debian:buster-20200607 as task-runner-build
+
+RUN apt-get update \
+ && apt-get -y install openjdk-11-jdk git
+
+WORKDIR /opt/task-runner
+
+RUN git clone https://github.com/skodapetr/task-runner.git .
+
+RUN chmod +x ./gradlew && ./gradlew installDist
+
 FROM debian:buster-20200607
 
 ARG USER=5988
 
-RUN apt-get update
-
-RUN apt-get -y install \
+RUN apt-get update \
+ && apt-get -y install \
  wget curl \
- python2 python3 \
+ python2 python-numpy \
+ python3 python3-pip \
  make g++ zlib1g-dev \
- python-numpy \
- openjdk-11-jre-headless
+ openjdk-11-jre-headless 
 
 RUN addgroup --gid ${USER} user \
  && useradd --uid ${USER} --gid ${USER} user
 
-RUN mkdir /opt/conservation \
- && chown user:user /opt/conservation \
- && mkdir /opt/p2rank \
- && chown user:user /opt/p2rank
+RUN mkdir /opt/conservation && chown user:user /opt/conservation \
+ && mkdir /opt/p2rank && chown user:user /opt/p2rank \
+ && mkdir /opt/protein-utils && chown user:user /opt/protein-utils \
+ && mkdir /opt/p2rank-runtime && chown user:user /opt/p2rank-runtime \
+ && mkdir /opt/task-runner && chown user:user /opt/task-runner \
+ && mkdir /data && chown user:user /data \
+ && mkdir /data/p2rank && chown user:user /data/p2rank
 
-USER ${USER}:${USER}
+# protein-utils
+
+WORKDIR /opt/protein-utils
+COPY --from=protein-utils-build /opt/protein-utils/dist ./
+RUN ls -l
+RUN chmod a+x /opt/protein-utils/bin/protein-utils
+
+# task runner
+
+WORKDIR /opt/task-runner
+COPY --from=task-runner-build  /opt/task-runner/dist ./
+RUN chmod a+x /opt/task-runner/bin/task-runner-cli
 
 # conservation pipeline
 
@@ -36,8 +70,10 @@ RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.
  && cd .. \
  && tar -xf muscle3.8.31_i86linux64.tar.gz \
  && tar -xf conservation_code.tar.gz \
- && mv conservation_code \
+ && mv conservation_code jense_shannon_divergence \
  && rm *.gz
+
+RUN chmod -R a+r /opt/conservation/jense_shannon_divergence/matrix
 
 # p2rank
 
@@ -45,13 +81,23 @@ WORKDIR /opt/p2rank
 
 RUN wget https://github.com/rdk/p2rank/releases/download/2.1/p2rank_2.1.tar.gz \
  && tar -xf p2rank_2.1.tar.gz \
- && rm p2rank_2.1.tar.gz
+ && rm p2rank_2.1.tar.gz 
 
-# scripts
+# p2rank runtime
 
+WORKDIR /opt/p2rank-runtime
+COPY ./p2rank-runtime ./
 
+RUN pip3 install requests biopython
 
-# final setup
+RUN chmod a+x /opt/p2rank-runtime/p2rank.sh 
+
+# task runner definitions
+
+WORKDIR /data/p2rank/
+COPY ./task-runner ./templates
+
+# environment variables and setup
 
 ENV BLASTDB="/data/conservation/blast-database/"
 ENV HSSPTDB="/data/conservation/hssp/"
@@ -61,3 +107,22 @@ ENV PSIBLAST_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/psiblast"
 ENV BLASTDBCMD_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/blastdbcmd"
 ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
 ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
+
+ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
+
+EXPOSE 8020
+
+WORKDIR /opt/p2rank-runtime
+
+USER ${USER}:${USER}
+
+#
+
+CMD [ \
+    "/opt/task-runner/bin/task-runner-cli", \
+    "--TemplatesDirectory=/data/p2rank/templates", \
+    "--TaskDirectory=/data/p2rank/task/database", \
+    "--WorkingDirectory=/data/p2rank/task/working", \
+    "--WorkerCount=1", \
+    "--HttpPort=8020" \
+]

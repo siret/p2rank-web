@@ -1,11 +1,23 @@
 template:
+  version: 1
   id: v2-conservation
   urlPath: v2-conservation
-  version: 1
-  allowInputFiles: false
   createOnGet: true
   mergeErrOutToStdOut: true
-  newLocationHttpTemplate: http://localhost:8075/analyze/{template}/{task}
+  newLocationHttpTemplate: ./analyze?database=v2-conservation&code={task}
   steps:
-    - name: "echo"
-      command: 'echo "${_.id} : ${_.input} -> ${_.public}"'
+    - name: 'prepare configuration'
+      command: >-
+        python3 /opt/p2rank-runtime/create_configuration.py
+        --task ${_.id}
+        --output "${_.working}/configuration.json"
+        --conservation
+    - name: 'p2rank'
+      command: >-
+        python3 /opt/p2rank-runtime/execute_p2rank.py
+        --p2rank /opt/p2rank/p2rank_2.1
+        --input "${_.input}"
+        --working "${_.working}"
+        --output "${_.public}"
+        --configuration "${_.working}/configuration.json"
+

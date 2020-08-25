@@ -33,7 +33,6 @@ function initializeApi(app) {
         "proxyReqPathResolver": (request) => {
           let url = "/api/v1/task" + request.url;
           url = url.replace("/status.json", "");
-          console.log("proxy", request.url, "->", url);
           return url;
         },
       }));

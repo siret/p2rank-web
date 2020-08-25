@@ -3,6 +3,7 @@
 
 # Set on checkout.
 *.csv text eol=crlf
+*.bat text eol=crlf
 
 # Binary files.
 *.jpg binary

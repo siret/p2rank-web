@@ -1,0 +1,5 @@
+template:
+  version: 1
+  id: v1
+  urlPath: id_noconser
+  readOnly: true

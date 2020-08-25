@@ -1,6 +1,7 @@
 import LiteMol from "litemol";
 import PrankWebSpec from "./specification";
 import {render} from "./app";
+import {getApiEndpoint} from "./configuration";
 
 (function initialize() {
   checkStatus();
@@ -9,32 +10,58 @@ import {render} from "./app";
 async function checkStatus() {
   const analyzeNode = document.getElementById("analyze")!;
   const progressNode = document.getElementById('progress')!;
+  const requestFailedNode = document.getElementById('requestFailed')!;
+  const runningNode = document.getElementById('running')!;
+  const failedNode = document.getElementById('failed')!;
+  const stdoutNode = document.getElementById('stdout')!;
   const params = getParams();
-  const status = await getStatus(params.database, params.id);
+  if (params.database === null || params.id === null) {
+    hydeElements([analyzeNode, runningNode, failedNode, stdoutNode]);
+    showElements([progressNode, requestFailedNode]);
+    setFailedHtml("Incomplete task specification.");
+    return;
+  }
+  let status;
+  try {
+    status = await getStatus(params.database, params.id);
+  } catch (ex) {
+    hydeElements([analyzeNode, runningNode, failedNode, stdoutNode]);
+    showElements([progressNode, requestFailedNode]);
+    setFailedHtml("Failed to contact the server. <br/>\n" +
+      "We will retry in a few seconds.");
+    setTimeout(checkStatus, 15000);
+    return;
+  }
   if (taskFinished(status)) {
-    setElementClass(analyzeNode, "hide-content", false);
-    setElementClass(progressNode, "hide-content", true);
+    hydeElements([progressNode]);
+    showElements([analyzeNode]);
     renderVisualisation(params.database, params.id);
     return;
   }
-  setElementClass(analyzeNode, "hide-content", true);
-  setElementClass(progressNode, "hide-content", false);
+  //
+  if (taskFailed(status)) {
+    hydeElements([analyzeNode, requestFailedNode, runningNode]);
+    showElements([progressNode, failedNode, stdoutNode]);
+    renderProgress(params.database, params.id);
+    return;
+  }
+  hydeElements([analyzeNode, requestFailedNode, failedNode]);
+  showElements([progressNode, runningNode, stdoutNode]);
   renderProgress(params.database, params.id);
-  setTimeout(checkStatus, 10000);
+  setTimeout(checkStatus, 5000);
 }
 
 function getParams() {
-  const path = window.location.pathname.split("/");
-  const len = path.length;
+  const params = new URLSearchParams(window.location.search);
   return {
-    "database": path[len - 2],
-    "id": path[len - 1]
+    "database": params.get("database"),
+    "id": params.get("code"),
   }
 }
 
 async function getStatus(database: string, id: string): Promise<string> {
   // We need to navigate to the root and then we can request the data.
-  const url = "./../../api/" + database + "/" + id + "/status.json";
+  const url = getApiEndpoint(database, id);
   return fetch(url).then((response) => {
     if (response.status !== 200) {
       throw new Error("Invalid response.");
@@ -47,7 +74,24 @@ function taskFinished(status: string): boolean {
   return status === "successful";
 }
 
-function setElementClass(element: Element, className:string, active:boolean) {
+function showElements(elements: Element[]) {
+  for (const element of elements) {
+    setElementClass(element, "hide-content", false);
+  }
+}
+
+function setFailedHtml(text:string) {
+  const failedText = document.getElementById('requestFailedText')!;
+  failedText.innerHTML = text;
+}
+
+function hydeElements(elements: Element[]) {
+  for (const element of elements) {
+    setElementClass(element, "hide-content", true);
+  }
+}
+
+function setElementClass(element: Element, className: string, active: boolean) {
   const actual = element.classList.contains(className);
   if (actual == active) {
     return;
@@ -87,9 +131,14 @@ function createPlugin(target: HTMLElement) {
   return plugin;
 }
 
+
+function taskFailed(status: string): boolean {
+  return status === "failed";
+}
+
 function renderProgress(database: string, id: string) {
   const progressTextNode = document.getElementById("progress-text")!;
-  const url = "./../../api/" + database + "/" + id + "/stdout";
+  const url = getApiEndpoint(database, id) + "/stdout";
   fetch(url).then((response) => {
     if (response.status !== 200) {
       throw new Error("Invalid response.");
@@ -99,3 +148,4 @@ function renderProgress(database: string, id: string) {
     progressTextNode.innerText = response;
   });
 }
+

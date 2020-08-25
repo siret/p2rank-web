@@ -4,3 +4,6 @@ build/
 dist/
 node_modules/
 data/
+
+*.iml
+.*

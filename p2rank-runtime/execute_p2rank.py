@@ -99,14 +99,14 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     prepare_raw_structure_file(arguments, structure, structure_file)
     available_chains = get_structure_chains(structure_file)
 
-    chains = structure.get("chain", None)
+    chains = structure.get("chains", None)
     result_path = os.path.join(arguments["output"], "structure.pdb")
     if chains is None or len(chains) == 0:
         logging.info("Using whole structure file.")
         shutil.copy(structure_file, result_path)
         return result_path, available_chains
 
-    requested_chains = {item for item in chains.split(",") if item}
+    requested_chains = {item for item in chains if item}
     if not requested_chains.issubset(available_chains):
         raise Exception(
             f"Requested chains {list(requested_chains)} but only"
@@ -162,7 +162,9 @@ def download(url: str, destination: str) -> None:
 
 def execute_command(command: str):
     logging.debug("Executing '%s'", command)
-    subprocess.run(command, shell=True, env=os.environ.copy())
+    result = subprocess.run(command, shell=True, env=os.environ.copy())
+    # Throw for non-zero (failure) return code.
+    result.check_returncode()
 
 
 def prepare_conservation(
@@ -267,11 +269,13 @@ def execute_p2rank(
 
     # Prepare command.
     output_dir = os.path.join(arguments["working"], "p2rank-output")
+    this_dir = os.path.dirname(os.path.realpath(__file__))
+    p2rank_sh = os.path.join(this_dir, "p2rank.sh")
     p2rank_config = os.path.join(
         arguments["p2rank"], "config",
         select_p2rank_configuration(configuration))
 
-    command = f"./p2rank.sh predict " \
+    command = f"{p2rank_sh} predict " \
               f"-c {p2rank_config} " \
               f"-threads 1 " \
               f"-f {structure_file} " \

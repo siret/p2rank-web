@@ -65,28 +65,31 @@ function submitStructureFileWithMsa(structureFiles, msaFiles) {
     "input",
     asJsonBlob({
       "conservation": true,
-      "chain": $("#fileChains").val(),
+      "chains": getUserChainArray(),
     }),
     "configuration.json");
   sendRequest("./api/v2-user-upload", formData);
 }
 
-function asJsonBlob(content) {
-  return new Blob([JSON.stringify(content)], {"type": "text/json"});
-}
-
 function addStructureFileToFormData(formData, structureFiles) {
   for (let file of structureFiles) {
-    // file.name
     formData.append("input", file, "structure.pdb");
   }
 }
 
 function addMsaFilesToFormData(formData, msaPdb) {
   for (let file of msaPdb) {
-    // file.name
     formData.append("input", file, "msa.fasta");
   }
+}
+
+function asJsonBlob(content) {
+  return new Blob([JSON.stringify(content)], {"type": "text/json"});
+}
+
+function getUserChainArray() {
+  const chains = $("#fileChains").val();
+  return chains.split(",");
 }
 
 function sendRequest(url, formData) {
@@ -97,10 +100,7 @@ function sendRequest(url, formData) {
     "data": formData,
     "processData": false,
     "success": function (data, status, request) {
-      // TODO Redirect to URL based on the response.
-      console.log("response", request.getResponseHeader("location"));
       window.location.href = request.getResponseHeader("location");
-
     },
   });
 }
@@ -112,7 +112,7 @@ function submitStructureFileWithHssp(structureFiles, hsspCode) {
     "input",
     asJsonBlob({
       "conservation": true,
-      "chain": $("#fileChains").val(),
+      "chains": getUserChainArray(),
       "hssp": hsspCode,
     }),
     "configuration.json");
@@ -126,7 +126,7 @@ function submitStructureFile(structureFiles) {
     "input",
     asJsonBlob({
       "conservation": true,
-      "chain": $("#fileChains").val(),
+      "chains": getUserChainArray(),
     }),
     "configuration.json");
   sendRequest("./api/v2-user-upload", formData);
@@ -139,7 +139,7 @@ function submitStructureFileNoConservation(structureFiles) {
     "input",
     asJsonBlob({
       "conservation": false,
-      "chain": $("#fileChains").val(),
+      "chains": getUserChainArray(),
     }),
     "configuration.json");
   sendRequest("./api/v2-user-upload", formData);
@@ -153,7 +153,7 @@ function submitStructurePdbWithMsa(structurePdb, msaFiles) {
     asJsonBlob({
       "conservation": true,
       "pdb": structurePdb,
-      "chain": getStructurePdbChain(),
+      "chains": getStructurePdbChain(),
     }),
     "configuration.json");
   sendRequest("./api/v2-user-upload", formData);
@@ -167,17 +167,25 @@ function getStructurePdbChain() {
       chains.push(checkbox.attr("chain"));
     }
   });
-  return chains.join(",");
+  return chains;
 }
 
 function submitStructurePdb(structurePdb) {
-  const chain = getStructurePdbChain();
-  window.location.href = "/analyze/v2/" + structurePdb + "_" + chain;
+  const chains = getStructurePdbChain();
+  window.location.href = createUrl("v2-conservation", structurePdb, chains);
+}
+
+function createUrl(database, pdb, chains) {
+  let result = "/analyze?database=" + database + "&code=" + pdb;
+  if (chains.length > 0) {
+    result += "_" + chains.join(",");
+  }
+  return result;
 }
 
 function submitStructurePdbNoConservation(structurePdb) {
-  const chain = getStructurePdbChain();
-  window.location.href = "/analyze/v2-conservation/" + structurePdb + "_" + chain;
+  const chains = getStructurePdbChain();
+  window.location.href = createUrl("v2", structurePdb, chains);
 }
 
 //

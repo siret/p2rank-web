@@ -1,5 +1,5 @@
 import React from "react";
-import Pocket from "./Pocket";
+import Pocket from "./pocket";
 import {PrankPocket} from "./prediction-entity";
 
 export default class PocketList extends React.Component
