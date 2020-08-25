@@ -176,7 +176,7 @@ function submitStructurePdb(structurePdb) {
 }
 
 function createUrl(database, pdb, chains) {
-  let result = "/analyze?database=" + database + "&code=" + pdb;
+  let result = "./analyze?database=" + database + "&code=" + pdb;
   if (chains.length > 0) {
     result += "_" + chains.join(",");
   }
