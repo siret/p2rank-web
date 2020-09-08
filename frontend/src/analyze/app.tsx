@@ -142,8 +142,8 @@ export class App extends React.Component<{
       );
     }
     if (this.state.data) {
-      const downloadUrl = "/api/" + this.props.inputType
-        + "/all/" + this.props.inputId;
+      const downloadUrl = "./api/v1/task/" + this.props.inputType
+        + "/" + this.props.inputId + "/public/visualizations.zip";
       return (
         <div>
           <ControlBox
