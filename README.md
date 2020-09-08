@@ -41,7 +41,7 @@ We also need to map map files from Docker to the host machine - namely the
 conservation files, and the database of computed predictions. 
 Same as with build we also specify the user.
 ```
-docker run --name p2rank-web-runtime --network p2rank-network -v /data/conservation:/data/conservation -v /data/p2rank/database:/data/p2rank/task -u $(id -u ${USER}):$(id -g ${USER}) --rm p2rank-runtime
+docker run --name p2rank-web-runtime --network p2rank-network -v /data/conservation:/data/conservation -v /data/p2rank/database:/data/p2rank/task -u $(id -u ${USER}):$(id -g ${USER}) --rm p2rank-web-runtime
 ```
 In the next step we start the API gateway image. We specify the network that
 the container should use. We also map the Docker port 8020 to 8070 on host 
