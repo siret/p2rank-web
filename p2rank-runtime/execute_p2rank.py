@@ -95,16 +95,19 @@ def load_json(path: str) -> typing.Dict:
 def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     logging.info("Preparing structure ...")
     structure = configuration["structure"]
-    structure_file = os.path.join(arguments["working"], "structure.pdb")
+    structure_file = os.path.join(arguments["working"], "structure-raw.pdb")
     prepare_raw_structure_file(arguments, structure, structure_file)
     available_chains = get_structure_chains(structure_file)
 
-    chains = structure.get("chains", None)
     result_path = os.path.join(arguments["output"], "structure.pdb")
+    shutil.copy(structure_file, result_path)
+
+    chains = structure.get("chains", None)
+    working_path = os.path.join(arguments["working"], "structure.pdb")
     if chains is None or len(chains) == 0:
         logging.info("Using whole structure file.")
-        shutil.copy(structure_file, result_path)
-        return result_path, available_chains
+        shutil.copy(structure_file, working_path)
+        return working_path, available_chains
 
     requested_chains = {item for item in chains if item}
     if not requested_chains.issubset(available_chains):
@@ -115,13 +118,13 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     execute_command(
         f"{PROTEIN_UTILS_CMD} -a filter-by-chain"
         f" --structure {structure_file}"
-        f" --output {result_path}"
+        f" --output {working_path}"
         f" --chains {','.join(requested_chains)}")
 
     logging.info("Preparing structure ... done")
-    logging.debug(f"Path: {result_path}")
+    logging.debug(f"Path: {working_path}")
     logging.debug(f"Chains: {' '.join(requested_chains)}")
-    return result_path, requested_chains
+    return working_path, requested_chains
 
 
 def prepare_raw_structure_file(arguments, structure, structure_file: str):
