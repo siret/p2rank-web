@@ -248,13 +248,34 @@ def _prepare_for_conservation(input_file: str, output_file: str) -> None:
 def compute_jensen_shannon_divergence(
         input_file: str, output_file: str) -> str:
     """Input sequence must be on the first position."""
+    sanitized_input_file = input_file + ".sanitized";
+    sanitize_jensen_shannon_divergence_input(
+        input_file, sanitized_input_file)
     cmd = "cd {} && python2 score_conservation.py {} > {}".format(
         JENSE_SHANNON_DIVERGANCE_DIR,
-        os.path.abspath(input_file),
+        os.path.abspath(sanitized_input_file),
         os.path.abspath(output_file))
     logging.info("Executing Jense Shannon Divergence script ...")
     logging.debug("Executing command:\n%s", cmd)
     execute_command(cmd)
     return output_file
+
+
+def sanitize_jensen_shannon_divergence_input(input_file: str, output_file: str):
+    """Chain names such as '>pdb|2SRC|Chain A' lead to
+
+    File "score_conservation.py", line 599, in load_sequence_weights
+    seq_weights.append(float(l[1]))
+    ValueError: could not convert string to float: A
+
+    As output of the jensen_shannon_divergence does not use the names,
+    we replace all spaces with '_' in chain names.
+    """
+    with open(input_file, "r") as in_stream, \
+            open(output_file, "w", newline="") as out_stream:
+        for line in in_stream:
+            if line.startswith(">"):
+                line = line.replace(" ", "_")
+            out_stream.write(line)
 
 # endregion
