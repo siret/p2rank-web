@@ -17,7 +17,7 @@ export default class ControlBox extends React.Component<{
 }> {
 
   state = {
-    visible: true,
+    "visible": true,
   };
 
   constructor(props: any) {
@@ -83,8 +83,8 @@ export default class ControlBox extends React.Component<{
     this.props.plugin.command(LiteMol.Bootstrap.Command.Layout.SetState, {
       "regionStates": {
         [LiteMol.Bootstrap.Components.LayoutRegion.Top]:
-          regionState == "Sticky" ? "Hidden" : "Sticky"
-      }
+          regionState == "Sticky" ? "Hidden" : "Sticky",
+      },
     })
   }
 

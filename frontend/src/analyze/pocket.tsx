@@ -75,7 +75,7 @@ export default class Pocket extends React.Component
           style={{
             "float": "left",
             "marginLeft": "1rem",
-            display: iconDisplay
+            "display": iconDisplay,
           }}
           title="Focus"
           className="pocket-btn"
@@ -90,10 +90,10 @@ export default class Pocket extends React.Component
           title="Show / Hide"
           className="pocket-btn"
           onClick={this.toggleVisibility}>
-                  <span className={
-                    this.props.isVisible ?
-                      "pocket-icon show-icon" :
-                      "pocket-icon hide-icon"}/>
+          <span className={
+            this.props.isVisible ?
+              "pocket-icon show-icon" :
+              "pocket-icon hide-icon"}/>
         </button>
         <div style={{"clear": "both"}}/>
         <p style={{"float": "left"}} className="pocket-feature">

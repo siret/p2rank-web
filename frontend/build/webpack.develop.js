@@ -12,12 +12,8 @@ module.exports = merge(common, {
       {
         "enforce": "pre",
         "test": /\.(js|jsx)$/,
-        "exclude": /node_modules/,
-        "use": ["babel-loader"] // , "eslint-loader"
-      },
-      {
-        "test": /\.(sa|sc|c)ss$/,
-        "loader": "style-loader!css-loader",
+        "exclude": [/node_modules/, /assets/],
+        "use": ["babel-loader"],
       },
     ],
   },

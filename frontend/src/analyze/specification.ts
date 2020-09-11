@@ -9,28 +9,28 @@ const PrankWebSpec: LiteMol.Plugin.Specification = {
     {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateModel,
       "view": LiteMol.Plugin.Views.Transform.Molecule.CreateModel,
-      "initiallyCollapsed": true
+      "initiallyCollapsed": true,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateSelection,
       "view": LiteMol.Plugin.Views.Transform.Molecule.CreateSelection,
-      "initiallyCollapsed": true
+      "initiallyCollapsed": true,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateAssembly,
       "view": LiteMol.Plugin.Views.Transform.Molecule.CreateAssembly,
-      "initiallyCollapsed": true
+      "initiallyCollapsed": true,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateSymmetryMates,
       "view": LiteMol.Plugin.Views.Transform.Molecule.CreateSymmetryMates,
-      "initiallyCollapsed": true
+      "initiallyCollapsed": true,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateMacromoleculeVisual,
-      "view": LiteMol.Plugin.Views.Transform.Empty
+      "view": LiteMol.Plugin.Views.Transform.Empty,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateVisual,
-      "view": LiteMol.Plugin.Views.Transform.Molecule.CreateVisual
+      "view": LiteMol.Plugin.Views.Transform.Molecule.CreateVisual,
     }, {
       "transformer": LiteMol.Bootstrap.Entity.Transformer.Molecule.CreateLabels,
-      "view": LiteMol.Plugin.Views.Transform.Molecule.CreateLabels
+      "view": LiteMol.Plugin.Views.Transform.Molecule.CreateLabels,
       // TODO Why was this here?
     // }, {
     //   "transformer": LiteMol.Extensions.ParticleColoring.Apply,
@@ -66,17 +66,17 @@ const PrankWebSpec: LiteMol.Plugin.Specification = {
     LiteMol.Plugin.Components.create("PrankWeb.SequenceView", s => new SequenceController(s), SequenceView)(LiteMol.Bootstrap.Components.LayoutRegion.Top, true),
     LiteMol.Plugin.Components.Context.Overlay(LiteMol.Bootstrap.Components.LayoutRegion.Root),
     LiteMol.Plugin.Components.Context.Toast(LiteMol.Bootstrap.Components.LayoutRegion.Main, true),
-    LiteMol.Plugin.Components.Context.BackgroundTasks(LiteMol.Bootstrap.Components.LayoutRegion.Main, true)
+    LiteMol.Plugin.Components.Context.BackgroundTasks(LiteMol.Bootstrap.Components.LayoutRegion.Main, true),
   ],
   "viewport": {
     "view": LiteMol.Plugin.Views.Visualization.Viewport,
-    "controlsView": LiteMol.Plugin.Views.Visualization.ViewportControls
+    "controlsView": LiteMol.Plugin.Views.Visualization.ViewportControls,
   },
   "layoutView": LiteMol.Plugin.Views.Layout,
   "tree": {
     "region": LiteMol.Bootstrap.Components.LayoutRegion.Left,
-    "view": LiteMol.Plugin.Views.Entity.Tree
-  }
+    "view": LiteMol.Plugin.Views.Entity.Tree,
+  },
 };
 
 export default PrankWebSpec;

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%= require('html-loader!./partial/google-tag-manager.html') %>
-    <%= require('html-loader!./partial/head.html') %>
+    <%= require('html-loader?attributes=false!./partial/google-tag-manager.html') %>
+    <%= require('html-loader?attributes=false!./partial/head.html') %>
     <link rel="stylesheet" href="./assets/css/shared.css"/>
 </head>
 <body class="bg-light">
-<%= require('html-loader!./partial/navigation.html') %>
+<%= require('html-loader?attributes=false!./partial/navigation.html') %>
 <div class="container">
     <h2 id="privacy">Privacy</h2>
     <h3>Data processed</h3>
