@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+  p2rank-api-gateway:
+    build:
+      context: ./
+      dockerfile: ./api-gateway/Dockerfile
+    restart: unless-stopped
+    networks:
+      - p2rank-online
+    ports:
+      - "8080:80"
+  p2rank-web-runtime:
+    build:
+      context: ./
+      dockerfile: ./p2rank-runtime/Dockerfile
+      args:
+        USER: ${USER}
+    restart: unless-stopped
+    networks:
+      - p2rank-online
+    volumes:
+      -  conservation-volume:/data/conservation
+      -  database-volume:/data/p2rank/task
+    user: ${USER}
+networks:
+  p2rank-online:
+volumes:
+  conservation-volume:
+  database-volume:

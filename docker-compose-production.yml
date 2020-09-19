@@ -1,0 +1,10 @@
+version: "3.8"
+services:
+  p2rank-web-runtime:
+    build:
+      args:
+        USER: "1002"
+    user: "1002"
+    volumes:
+      - /data/conservation:/data/conservation
+      - /data/p2rank-online:/data/p2rank/task
