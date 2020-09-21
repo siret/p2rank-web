@@ -6,7 +6,6 @@
     <script type="text/javascript" src="./assets/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="./assets/js/snap.svg-min.js"></script>
     <link rel="stylesheet" href="./assets/css/jquery-ui.css">
-    <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
     <link rel="stylesheet" href="./assets/css/LiteMol-plugin.css"/>
     <link rel="stylesheet" href="./assets/css/prank-web.css">
     <link rel="stylesheet" href="./assets/css/protael.css"/>
@@ -27,24 +26,34 @@
     </div>
 </div>
 <div id="progress" class="jumbotron" style="text-align: center;">
-    <div id="requestFailed" class="hide-content">
-        <p class="text-center" id="requestFailedText">
+    <div id="running">
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
+    <div id="progressMessage">
+        <p class="text-center" id="progressMessageText">
+            Getting information from server ...
         </p>
     </div>
-    <div id="running">
-        <i style="font-size:48px; color: aqua;" class="fa fa-spinner fa-spin"></i>
-        <br/>
-        <p class="text-center">Please wait, running analysis...</p>
-    </div>
-    <div id="failed" class="hide-content">
+    <div id="progressQuestions" class="hide-content">
         <p class="text-center">
-            Execution failed, please see the log bellow for more details.
-            <br/>
             If you have any questions, please feel to create a github
             <a href="https://github.com/siret/p2rank-web/issues">issue</a>.
         </p>
     </div>
-    <div id="stdout" class="row" style="margin: 0;">
+    <div id="stdout" class="row hide-content" style="margin: 0;">
         <code id="progress-text"
               class="col-12 col-lg-10 col-lg-offset-1 col-xl-8 col-xl-offset-2"
               style="text-align: left">

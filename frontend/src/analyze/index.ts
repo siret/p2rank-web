@@ -10,43 +10,67 @@ import {getApiEndpoint} from "./configuration";
 async function checkStatus() {
   const analyzeNode = document.getElementById("analyze")!;
   const progressNode = document.getElementById('progress')!;
-  const requestFailedNode = document.getElementById('requestFailed')!;
+  const messageNode = document.getElementById('progressMessage')!;
   const runningNode = document.getElementById('running')!;
-  const failedNode = document.getElementById('failed')!;
+  const questionsNode = document.getElementById('progressQuestions')!;
   const stdoutNode = document.getElementById('stdout')!;
   const params = getParams();
   if (params.database === null || params.id === null) {
-    hydeElements([analyzeNode, runningNode, failedNode, stdoutNode]);
-    showElements([progressNode, requestFailedNode]);
-    setFailedHtml("Incomplete task specification.");
+    hydeElements([analyzeNode, runningNode, questionsNode, stdoutNode]);
+    showElements([progressNode, messageNode]);
+    setProgressMessage("Incomplete task specification.");
     return;
   }
-  let status;
+  let status:any;
   try {
     status = await getStatus(params.database, params.id);
   } catch (ex) {
-    hydeElements([analyzeNode, runningNode, failedNode, stdoutNode]);
-    showElements([progressNode, requestFailedNode]);
-    setFailedHtml("Failed to contact the server. <br/>\n" +
+    hydeElements([analyzeNode, runningNode, questionsNode, stdoutNode]);
+    showElements([progressNode, messageNode]);
+    setProgressMessage("Failed to contact the server. <br/>\n" +
       "We will retry in a few seconds.");
     setTimeout(checkStatus, 15000);
     return;
   }
-  if (taskFinished(status)) {
+  if (status.statusCode === 404) {
+    hydeElements([analyzeNode, runningNode, stdoutNode]);
+    showElements([progressNode, messageNode, questionsNode]);
+    setProgressMessage("Given prediction was not found.");
+    return;
+  }
+  if (status.statusCode < 200 || status.statusCode > 299) {
+    hydeElements([analyzeNode, runningNode, questionsNode, stdoutNode]);
+    showElements([progressNode, questionsNode, messageNode]);
+    setProgressMessage("Server send " + status.statusCode +" code. <br/>\n");
+    return;
+  }
+  if (taskQueued(status.status)) {
+    hydeElements([analyzeNode, questionsNode]);
+    showElements([progressNode, messageNode, runningNode, stdoutNode]);
+    setProgressMessage("Waiting in queue ...");
+    setTimeout(checkStatus, 10000);
+    return;
+  }
+  if (taskFinished(status.status)) {
     hydeElements([progressNode]);
     showElements([analyzeNode]);
     renderVisualisation(params.database, params.id);
     return;
   }
-  //
-  if (taskFailed(status)) {
-    hydeElements([analyzeNode, requestFailedNode, runningNode]);
-    showElements([progressNode, failedNode, stdoutNode]);
+  if (taskFailed(status.status)) {
+    hydeElements([analyzeNode]);
+    showElements(
+      [progressNode, messageNode, questionsNode, runningNode, stdoutNode]);
+    setProgressMessage("Task failed, see log bellow for more details.");
     renderProgress(params.database, params.id);
     return;
   }
-  hydeElements([analyzeNode, requestFailedNode, failedNode]);
-  showElements([progressNode, runningNode, stdoutNode]);
+  hydeElements([analyzeNode, questionsNode]);
+  showElements([progressNode, runningNode, stdoutNode, messageNode]);
+  setProgressMessage(
+    "Please wait, running analysis ... <br/> " +
+    "You can monitor progress in the log bellow. <br/> Please be patient, " +
+    "some operations may take a longer time to compute.");
   renderProgress(params.database, params.id);
   setTimeout(checkStatus, 5000);
 }
@@ -59,15 +83,21 @@ function getParams() {
   }
 }
 
-async function getStatus(database: string, id: string): Promise<string> {
+async function getStatus(database: string, id: string): Promise<object> {
   // We need to navigate to the root and then we can request the data.
-  const url = getApiEndpoint(database, id);
+  const url = getApiEndpoint(database, id) + "/status.json";
   return fetch(url).then((response) => {
     if (response.status !== 200) {
-      throw new Error("Invalid response.");
+      return {
+        "statusCode": response.status
+      };
     }
     return response.json();
-  }).then((response) => response.status);
+  });
+}
+
+function taskQueued(status: string): boolean {
+  return status === "queued";
 }
 
 function taskFinished(status: string): boolean {
@@ -80,8 +110,8 @@ function showElements(elements: Element[]) {
   }
 }
 
-function setFailedHtml(text:string) {
-  const failedText = document.getElementById('requestFailedText')!;
+function setProgressMessage(text:string) {
+  const failedText = document.getElementById('progressMessageText')!;
   failedText.innerHTML = text;
 }
 
@@ -130,7 +160,6 @@ function createPlugin(target: HTMLElement) {
   });
   return plugin;
 }
-
 
 function taskFailed(status: string): boolean {
   return status === "failed";
