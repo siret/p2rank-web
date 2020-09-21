@@ -38,9 +38,9 @@ function initializeApi(app) {
       }));
   } else if (configuration["task-runner-directory"]) {
     const apiDirectory = path.join(
-      __dirname, "..", configuration["task-runner-directory"]);
-    app.use("/api", express.static(apiDirectory));
-    logger.info("Serving data from directory.", {"path": apiDirectory});
+      __dirname, configuration["task-runner-directory"]);
+    app.use("/api/v1/task", express.static(apiDirectory));
+    logger.info("Serving API from directory.", {"path": apiDirectory});
   }
 }
 
