@@ -1,7 +1,6 @@
 FROM debian:buster-20200607 as protein-utils-build
 
-RUN apt-get update \
- && apt-get -y install openjdk-11-jdk
+RUN apt-get -y --no-install-recommends install openjdk-11-jdk
 
 WORKDIR /opt/protein-utils
 COPY ./protein-utils ./
@@ -10,8 +9,7 @@ RUN chmod +x ./gradlew && ./gradlew installDist
 
 FROM debian:buster-20200607 as task-runner-build
 
-RUN apt-get update \
- && apt-get -y install openjdk-11-jdk git
+RUN apt-get -y --no-install-recommends install openjdk-11-jdk git
 
 WORKDIR /opt/task-runner
 
@@ -23,8 +21,7 @@ FROM debian:buster-20200607
 
 ARG USER=5988
 
-RUN apt-get update \
- && apt-get -y install \
+RUN apt-get -y --no-install-recommends install \
  wget curl \
  python2 python-numpy \
  python3 python3-pip \
@@ -71,7 +68,7 @@ RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.
  && tar -xf muscle3.8.31_i86linux64.tar.gz \
  && tar -xf conservation_code.tar.gz \
  && mv conservation_code jense_shannon_divergence \
- && rm *.gz
+ && rm ./*.gz
 
 RUN chmod -R a+r /opt/conservation/jense_shannon_divergence/matrix
 
@@ -88,7 +85,7 @@ RUN wget https://github.com/rdk/p2rank/releases/download/2.1/p2rank_2.1.tar.gz \
 WORKDIR /opt/p2rank-runtime
 COPY ./p2rank-runtime ./
 
-RUN pip3 install requests biopython
+RUN pip3 install requests==2.24.0 biopython==1.78
 
 RUN chmod a+x /opt/p2rank-runtime/p2rank.sh 
 
