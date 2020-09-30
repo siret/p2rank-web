@@ -1,13 +1,15 @@
 FROM debian:buster-20200607 as protein-utils-build
 
-RUN apt-get -y --no-install-recommends install openjdk-11-jdk
+RUN apt-get update \
+ && apt-get -y --no-install-recommends install openjdk-11-jdk
 
 WORKDIR /opt/protein-utils
 COPY ./protein-utils ./
 
 RUN chmod +x ./gradlew && ./gradlew installDist
 
-FROM debian:buster-20200607 as task-runner-build
+RUN apt-get update \
+ && debian:buster-20200607 as task-runner-build
 
 RUN apt-get -y --no-install-recommends install openjdk-11-jdk git
 
