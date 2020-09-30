@@ -21,7 +21,8 @@ FROM debian:buster-20200607
 
 ARG USER=5988
 
-RUN apt-get -y --no-install-recommends install \
+RUN apt-get update \
+ && apt-get -y --no-install-recommends install \
  wget curl \
  python2 python-numpy \
  python3 python3-pip \
