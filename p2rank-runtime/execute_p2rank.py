@@ -109,7 +109,7 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     if chains is None or len(chains) == 0:
         logging.info("Using whole structure file.")
         shutil.copy(structure_file, working_path)
-        return working_path, available_chains
+        return working_path, working_path, available_chains
 
     requested_chains = {item for item in chains if item}
     if not requested_chains.issubset(available_chains):
