@@ -45,8 +45,8 @@ async function checkStatus() {
     return;
   }
   if (taskQueued(status.status)) {
-    hydeElements([analyzeNode, questionsNode]);
-    showElements([progressNode, messageNode, runningNode, stdoutNode]);
+    hydeElements([analyzeNode, questionsNode, stdoutNode]);
+    showElements([progressNode, messageNode, runningNode]);
     setProgressMessage("Waiting in queue ...");
     setTimeout(checkStatus, 10000);
     return;
