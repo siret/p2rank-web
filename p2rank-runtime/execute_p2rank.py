@@ -60,7 +60,8 @@ def main(arguments):
     prepare_directories(arguments)
     init_logging()
     configuration = load_json(arguments["configuration"])
-    structure_file, chains = prepare_structure(arguments, configuration)
+    full_structure_file, structure_file, chains =\
+        prepare_structure(arguments, configuration)
     conservation_files = prepare_conservation(
         structure_file, chains, configuration, arguments)
 
@@ -72,7 +73,8 @@ def main(arguments):
         arguments, structure_file, configuration, conservation_files)
 
     process_p2rank_output(
-        structure_file, p2rank_output, arguments["output"], conservation_files)
+        full_structure_file, p2rank_output, arguments["output"],
+        conservation_files)
 
 
 def init_logging() -> None:
@@ -124,7 +126,7 @@ def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
     logging.info("Preparing structure ... done")
     logging.debug(f"Path: {working_path}")
     logging.debug(f"Chains: {' '.join(requested_chains)}")
-    return working_path, requested_chains
+    return result_path, working_path, requested_chains
 
 
 def prepare_raw_structure_file(arguments, structure, structure_file: str):
@@ -312,7 +314,7 @@ def gzip_file(source: str, target: str):
 
 
 def process_p2rank_output(
-        structure_file: str, p2rank_directory: str, output_directory: str,
+        full_structure_file: str, p2rank_directory: str, output_directory: str,
         conservation_files: typing.Dict[str, str]):
     zip_directory(
         os.path.join(p2rank_directory, "visualizations"),
@@ -335,7 +337,7 @@ def process_p2rank_output(
                             ])
 
     command = f"{PROTEIN_UTILS_CMD} -a p2rank-web" \
-              f" --structure={structure_file}" \
+              f" --structure={full_structure_file}" \
               f" --prediction={predictions_file}" \
               f" --residues={residues_file}" \
               f" --output-pocket={output_prediction_file}" \
