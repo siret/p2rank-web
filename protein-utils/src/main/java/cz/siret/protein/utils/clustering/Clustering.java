@@ -8,7 +8,7 @@ public interface Clustering<T> {
 
     class Cluster<T> {
 
-        private final List<T> items;
+        protected List<T> items;
 
         public Cluster(T item) {
             this.items = new ArrayList<>();
@@ -38,6 +38,11 @@ public interface Clustering<T> {
 
         double apply(Cluster<T> left, Cluster<T> right);
 
+    }
+
+    @FunctionalInterface
+    interface Position<T> {
+        double[] apply(T entity);
     }
 
     List<Cluster<T>> cluster(

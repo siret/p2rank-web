@@ -2,6 +2,7 @@ package cz.siret.protein.utils;
 
 import cz.siret.protein.utils.clustering.ClusterDistanceFunction;
 import cz.siret.protein.utils.clustering.Clustering;
+import cz.siret.protein.utils.clustering.GridBasedClustering;
 import cz.siret.protein.utils.clustering.SimpleClustering;
 import cz.siret.protein.utils.model.Ligand;
 import org.biojava.nbio.structure.Atom;
@@ -46,7 +47,8 @@ public class LigandUtils {
     public List<Ligand> selectLigands(Structure structure) {
         List<Group> ligandGroups = StructureUtils.getLigandGroups(structure);
         List<Atom> ligandAtoms = AtomUtils.getAllAtoms(ligandGroups);
-        SimpleClustering<Atom> clustering = new SimpleClustering<>();
+        Clustering<Atom> clustering =
+                new GridBasedClustering<>(Atom::getCoords);
         var clusters = clustering.cluster(
                 ligandAtoms,
                 configuration.LigandClusteringDistance,
