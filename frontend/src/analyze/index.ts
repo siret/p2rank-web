@@ -21,7 +21,7 @@ async function checkStatus() {
     setProgressMessage("Incomplete task specification.");
     return;
   }
-  let status:any;
+  let status: any;
   try {
     status = await getStatus(params.database, params.id);
   } catch (ex) {
@@ -41,7 +41,7 @@ async function checkStatus() {
   if (status.statusCode < 200 || status.statusCode > 299) {
     hydeElements([analyzeNode, runningNode, questionsNode, stdoutNode]);
     showElements([progressNode, questionsNode, messageNode]);
-    setProgressMessage("Server send " + status.statusCode +" code. <br/>\n");
+    setProgressMessage("Server send " + status.statusCode + " code. <br/>\n");
     return;
   }
   if (taskQueued(status.status)) {
@@ -58,9 +58,8 @@ async function checkStatus() {
     return;
   }
   if (taskFailed(status.status)) {
-    hydeElements([analyzeNode]);
-    showElements(
-      [progressNode, messageNode, questionsNode, runningNode, stdoutNode]);
+    hydeElements([analyzeNode, runningNode]);
+    showElements([progressNode, messageNode, questionsNode, stdoutNode]);
     setProgressMessage("Task failed, see log bellow for more details.");
     renderProgress(params.database, params.id);
     return;
@@ -110,7 +109,7 @@ function showElements(elements: Element[]) {
   }
 }
 
-function setProgressMessage(text:string) {
+function setProgressMessage(text: string) {
   const failedText = document.getElementById('progressMessageText')!;
   failedText.innerHTML = text;
 }
