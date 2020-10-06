@@ -23,6 +23,8 @@ FROM debian:buster-20200607
 
 ARG USER=5988
 
+ARG P2RANK_DOWNLOAD_URL
+
 RUN apt-get update \
  && apt-get -y --no-install-recommends install \
  wget curl \
@@ -79,9 +81,9 @@ RUN chmod -R a+r /opt/conservation/jense_shannon_divergence/matrix
 
 WORKDIR /opt/p2rank
 
-RUN wget https://github.com/rdk/p2rank/releases/download/2.1/p2rank_2.1.tar.gz \
- && tar -xf p2rank_2.1.tar.gz \
- && rm p2rank_2.1.tar.gz 
+RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
+ && tar -xf p2rank.tar.gz \
+ && rm p2rank.tar.gz
 
 # p2rank runtime
 

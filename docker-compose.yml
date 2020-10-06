@@ -15,6 +15,7 @@ services:
       dockerfile: ./p2rank-runtime/Dockerfile
       args:
         USER: ${USER}
+        P2RANK_DOWNLOAD_URL: "https://github.com/rdk/p2rank/releases/download/2.1/p2rank_2.1.tar.gz"
     restart: unless-stopped
     networks:
       - p2rank-online
