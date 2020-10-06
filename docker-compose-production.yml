@@ -1,5 +1,16 @@
 version: "3.8"
 services:
+  p2rank-monitor:
+    buid:
+      context: ./
+      dockerfile: ./monitor/Dockerfile
+      args:
+        USER: ${USER}
+    restart: unless-stopped
+    networks:
+      - p2rank-online
+    environment:
+      P2RANK_WEB_MONITOR_GOOGLE_ANALYTICS: "UA-136777636-2"
   p2rank-web-runtime:
     build:
       args:

@@ -1,0 +1,15 @@
+{
+  "name": "p2rank-monitoring",
+  "private": true,
+  "license": "MIT",
+  "main": "./server/server.js",
+  "scripts": {
+    "start": "node ./server/server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "request": "^2.88.2",
+    "winston": "^3.2.1",
+    "yaml": "^1.9.2"
+  }
+}
