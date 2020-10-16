@@ -22,7 +22,7 @@ def _read_arguments() -> typing.Dict[str, str]:
                         help="Input directory.")
     parser.add_argument("--output", required=True,
                         help="Output directory.")
-    parser.add_argument("--conservation", required=True,
+    parser.add_argument("--conservation", required=False,
                         help="Directory with conservations..")
     parser.add_argument("--p2rankUtils", required=True,
                         help="p2rank utils executable")
@@ -53,7 +53,10 @@ def convert(
         protein_utils: str, threads: int,
         input_dir: str, output_dir: str, conservation_dir: str,
         time: str, template: str):
-    conservation_files = os.listdir(conservation_dir)
+    if conservation_dir is None:
+        conservation_files = []
+    else:
+        conservation_files = os.listdir(conservation_dir)
     logging.info("Collecting PDB files from: %s", input_dir)
     pdb_ids = collect_pdb_ids(input_dir)
     if threads < 2:
