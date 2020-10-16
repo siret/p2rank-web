@@ -2,10 +2,10 @@ FROM node:12
 
 WORKDIR /opt/p2rank-monitor
 
-COPY package*.json ./
+COPY ./monitor/package*.json ./
 RUN npm ci --only=production
 
-COPY ./server ./server
+COPY ./monitor/server ./server
 
 EXPOSE 8021
 

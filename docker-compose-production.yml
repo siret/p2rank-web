@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   p2rank-monitor:
-    buid:
+    build:
       context: ./
       dockerfile: ./monitor/Dockerfile
       args:
