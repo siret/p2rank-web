@@ -54,11 +54,9 @@ def _read_arguments() -> typing.Dict[str, str]:
 
 
 def main(arguments):
-    # Setup.
-    conservation.execute_command = execute_command
-    #
-    prepare_directories(arguments)
     init_logging()
+    conservation.execute_command = execute_command
+    prepare_directories(arguments)
     configuration = load_json(arguments["configuration"])
     full_structure_file, structure_file, chains =\
         prepare_structure(arguments, configuration)
