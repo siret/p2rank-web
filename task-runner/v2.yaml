@@ -13,7 +13,7 @@ template:
         --output "${_.working}/configuration.json"
     - name: 'p2rank'
       command: >-
-        python3 /opt/p2rank-runtime/run_p2rank_task.py.py
+        python3 /opt/p2rank-runtime/run_p2rank_task.py
         --p2rank /opt/p2rank/p2rank_2.1
         --input "${_.input}"
         --working "${_.working}"
