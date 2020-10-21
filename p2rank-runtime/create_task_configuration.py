@@ -16,7 +16,7 @@ def _read_arguments() -> typing.Dict[str, str]:
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", required=True,
                         help="Task identification like 2SRC or 2SRC_A.")
-    parser.add_argument("--conservation",action="store_true",
+    parser.add_argument("--conservation", action="store_true",
                         help="Use conservation.")
     parser.add_argument("--output", required=True,
                         help="Output file.")

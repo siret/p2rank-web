@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Task configuration",
+  "required": [
+    "structure",
+    "conservation"
+  ],
+  "properties": {
+    "structure": {
+      "type": "object",
+      "description": "Describe the structure.",
+      "properties": {
+        "code": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "PDB code used to identify the structure."
+        },
+        "file": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Name of structure file to use."
+        },
+        "chains": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "description": "Restrict chains to use.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "conservation": {
+      "type": "object",
+      "description": "Configuration of conservation.",
+      "required": [
+        "compute"
+      ],
+      "properties": {
+        "compute": {
+          "type": "boolean",
+          "description": "If true conservation should be used."
+        },
+        "msaFile": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "File with multiple-sequence-alignment that should be used to compute conservation."
+        },
+        "hsspCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "PDB code of pre-computed conservation from HSSP database."
+        }
+      }
+    }
+  }
+}

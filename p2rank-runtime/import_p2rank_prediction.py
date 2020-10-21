@@ -212,7 +212,6 @@ def prepare_json_files(
               f" --output-pocket={output_prediction_file}" \
               f" --output-sequence={output_sequence_file}" \
               f" {conservation_args}"
-
     execute_command(command)
 
 

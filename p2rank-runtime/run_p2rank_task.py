@@ -49,7 +49,7 @@ def _read_arguments() -> typing.Dict[str, str]:
     parser.add_argument("--configuration", required=True,
                         help="JSON file.")
     parser.add_argument("--p2rank", required=True,
-                        help="p2rank root directory")
+                        help="p2rank directory.")
     return vars(parser.parse_args())
 
 
@@ -272,8 +272,7 @@ def execute_p2rank(
 
     # Prepare command.
     output_dir = os.path.join(arguments["working"], "p2rank-output")
-    this_dir = os.path.dirname(os.path.realpath(__file__))
-    p2rank_sh = os.path.join(this_dir, "p2rank.sh")
+    p2rank_sh = os.path.join(arguments["p2rank"], "run_p2rank.sh")
     p2rank_config = os.path.join(
         arguments["p2rank"], "config",
         select_p2rank_configuration(configuration))

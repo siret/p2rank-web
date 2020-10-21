@@ -8,7 +8,7 @@ template:
   steps:
     - name: 'prepare configuration'
       command: >-
-        python3 /opt/p2rank-runtime/create_configuration.py
+        python3 /opt/p2rank-runtime/create_task_configuration.py.py
         --task ${_.id}
         --output "${_.working}/configuration.json"
     - name: 'p2rank'

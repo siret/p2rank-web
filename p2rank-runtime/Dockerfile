@@ -84,6 +84,7 @@ WORKDIR /opt/p2rank
 RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
  && tar -xf p2rank.tar.gz \
  && rm p2rank.tar.gz
+COPY ./p2rank/p2rank_2.1.sh ./p2rank_2.1/run_p2rank.sh
 
 # p2rank runtime
 
@@ -111,6 +112,8 @@ ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
 ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
 
 ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
+
+ENV DEFAULT_P2RANK="/opt/p2rank/p2rank_2.1"
 
 EXPOSE 8020
 
