@@ -128,6 +128,6 @@ CMD [ \
     "--TemplatesDirectory=/data/p2rank/templates", \
     "--TaskDirectory=/data/p2rank/task/database", \
     "--WorkingDirectory=/data/p2rank/task/working", \
-    "--WorkerCount=1", \
+    "--WorkerCount=2", \
     "--HttpPort=8020" \
 ]
