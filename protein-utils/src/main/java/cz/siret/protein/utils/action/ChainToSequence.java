@@ -11,10 +11,11 @@ public class ChainToSequence {
     public String getChainSequence(Structure structure, String chainId)
             throws ActionFailed {
         for (Chain chain : structure.getChains()) {
-            if (!chainId.equals(chain.getId())) {
-                continue;
+            String id = chain.getId();
+            String name = chain.getName();
+            if (chainId.equals(id) || chainId.equals(name)) {
+                return getSequence(chain);
             }
-            return getSequence(chain);
         }
         throw new ActionFailed("Missing chain: {}", chainId);
     }
