@@ -85,6 +85,7 @@ RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
  && tar -xf p2rank.tar.gz \
  && rm p2rank.tar.gz
 COPY ./p2rank/p2rank_2.1.sh ./p2rank_2.1/run_p2rank.sh
+RUN chmod a+x ./p2rank_2.1/run_p2rank.sh
 
 # p2rank runtime
 
@@ -92,8 +93,6 @@ WORKDIR /opt/p2rank-runtime
 COPY ./p2rank-runtime ./
 
 RUN pip3 install requests==2.24.0 biopython==1.78
-
-RUN chmod a+x /opt/p2rank-runtime/p2rank.sh 
 
 # task runner definitions
 
