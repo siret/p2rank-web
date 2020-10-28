@@ -5,6 +5,7 @@ template:
   createOnGet: true
   mergeErrOutToStdOut: true
   newLocationHttpTemplate: ./analyze?database=v2-conservation&code={task}
+  taskGetIdentificationTransformation: UpperCase
   steps:
     - name: 'prepare configuration'
       command: >-
