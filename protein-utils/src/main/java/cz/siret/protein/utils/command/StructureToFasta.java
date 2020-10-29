@@ -42,7 +42,7 @@ public class StructureToFasta extends Command<StructureToFasta.Configuration> {
                 "Output file template. Use {chain} as a placeholder" +
                         "for chain value.");
         options.addOption(null, "chains", true,
-                "Command separated chain(s) to extract");
+                "Comma separated chain(s) to extract");
         return options;
     }
 

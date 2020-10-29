@@ -66,10 +66,12 @@ public class SelectChains extends Command<SelectChains.Configuration> {
                 configuration.structureFile);
         StringBuilder pdbBuilder = new StringBuilder();
         for (Chain chain : structure.getChains()) {
-            if (!configuration.chains.contains(chain.getId())) {
-                continue;
+            String id = chain.getId();
+            String name = chain.getName();
+            if (configuration.chains.contains(id)
+                    || configuration.chains.contains(name)) {
+                pdbBuilder.append(FileConvert.toPDB(chain));
             }
-            pdbBuilder.append(FileConvert.toPDB(chain));
         }
         File output = new File(configuration.outputFile);
         try (FileWriter writer = new FileWriter(output)) {

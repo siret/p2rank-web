@@ -1,13 +1,12 @@
 package cz.siret.protein.utils;
 
-import cz.siret.protein.utils.action.ChainToSequence;
 import cz.siret.protein.utils.command.PrepareDataForP2RankWeb;
 import cz.siret.protein.utils.command.StructureToFasta;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * This class holds use-case base tests. They may cover different areas
@@ -65,7 +64,7 @@ public class Issues {
     public void issue27() throws Exception {
         StructureToFasta.Configuration configuration =
                 new StructureToFasta.Configuration();
-        configuration.chains = Collections.singletonList("T");
+        configuration.chains = Arrays.asList("A","B","C","P","T");
         configuration.structureFile =  TestUtils.fileFromResource(
                 "issues/27/7bv2.pdb");
         File working = Files.createTempDirectory("protein-utils-test").toFile();
