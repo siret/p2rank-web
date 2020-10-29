@@ -7,6 +7,12 @@ import {getApiEndpoint} from "./configuration";
   checkStatus();
 })();
 
+/**
+ * We check more frequently at the start and slowly increase the
+ * check period over time to maximum.
+ */
+let queuedTimeoutModifier = 0.1;
+
 async function checkStatus() {
   const analyzeNode = document.getElementById("analyze")!;
   const progressNode = document.getElementById('progress')!;
@@ -29,7 +35,7 @@ async function checkStatus() {
     showElements([progressNode, messageNode]);
     setProgressMessage("Failed to contact the server. <br/>\n" +
       "We will retry in a few seconds.");
-    setTimeout(checkStatus, 15000);
+    setTimeout(checkStatus, 7000);
     return;
   }
   if (status.statusCode === 404) {
@@ -48,7 +54,10 @@ async function checkStatus() {
     hydeElements([analyzeNode, questionsNode, stdoutNode]);
     showElements([progressNode, messageNode, runningNode]);
     setProgressMessage("Waiting in queue ...");
-    setTimeout(checkStatus, 10000);
+    if (queuedTimeoutModifier <= 1) {
+      queuedTimeoutModifier += 0.1;
+    }
+    setTimeout(checkStatus, 10000 * queuedTimeoutModifier);
     return;
   }
   if (taskFinished(status.status)) {
