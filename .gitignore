@@ -4,6 +4,7 @@ build/
 dist/
 node_modules/
 data/
+__pycache__/
 
 *.iml
 .*
