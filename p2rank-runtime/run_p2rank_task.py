@@ -1,21 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Command examples:
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-000 --output ./public-000 --configuration ./examples/code.json
-#   Just PDB code with no chain provided.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-001 --output ./public-001 --configuration ./examples/code-conservation.json
-#   PDB code with chain "A" using conservation.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-002 --output ./public-002 --configuration ./examples/code-conservation-msa.json
-#   PDB code with chain "A" using custom MSA.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-003 --output ./public-003 --configuration ./examples/file-conservation-hssp.json
-#   PDB file with conservation from HSSP.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-004 --output ./public-004 --configuration ./examples/file-conservation-msa.json
-#   PDB file with chain "A" using custom MSA.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-005 --output ./public-005 --configuration ./examples/file-conservation.json
-#   PDB file with conservation.
-# python3 execute_p2rank.py --p2rank /opt/p2rank/p2rank_2.1 --input ./examples --working ./working-006 --output ./public-006 --configuration ./examples/file.json
-#   Just PDB file.
+# Run p2rank task. 
 #
 
 import os
@@ -27,15 +13,21 @@ import json
 import shutil
 import zipfile
 import gzip
+import collections
 
 import requests
-import Bio.PDB
 
 import conservation
 
 PROTEIN_UTILS_CMD = os.environ["PROTEIN_UTILS_CMD"]
 
 HSSP_DATABASE_DIR = os.environ["HSSPTDB"]
+
+StructureTuple = collections.namedtuple(
+    "StructureTuple", ["raw_file", "file", "fasta_files", "chains"])
+
+ConservationTuple = collections.namedtuple(
+    "ConservationTuple", ["file", "msa_file"])
 
 
 def _read_arguments() -> typing.Dict[str, str]:
@@ -54,25 +46,26 @@ def _read_arguments() -> typing.Dict[str, str]:
 
 
 def main(arguments):
+    initialize(arguments)
+
+    configuration = load_json(arguments["configuration"])
+    structure = prepare_structure(arguments, configuration)
+    conservation_files = prepare_conservation(
+        configuration, arguments, structure)
+
+    p2rank_output = execute_p2rank(
+        arguments, structure.file, configuration, conservation_files)
+
+    prepare_download_data(
+        arguments, p2rank_output, structure, conservation_files)
+    prepare_p2rank_web_data(
+        p2rank_output, structure, conservation_files, arguments["output"])
+
+
+def initialize(arguments) -> None:
     init_logging()
     conservation.execute_command = execute_command
     prepare_directories(arguments)
-    configuration = load_json(arguments["configuration"])
-    full_structure_file, structure_file, chains =\
-        prepare_structure(arguments, configuration)
-    conservation_files = prepare_conservation(
-        structure_file, chains, configuration, arguments)
-
-    print("Configuration:", configuration)
-    print("Structure    :", structure_file)
-    print("Conservation :", conservation_files)
-
-    p2rank_output = execute_p2rank(
-        arguments, structure_file, configuration, conservation_files)
-
-    process_p2rank_output(
-        full_structure_file, p2rank_output, arguments["output"],
-        conservation_files)
 
 
 def init_logging() -> None:
@@ -87,47 +80,36 @@ def prepare_directories(arguments):
     os.makedirs(arguments["output"], exist_ok=True)
 
 
-def load_json(path: str) -> typing.Dict:
-    with open(path) as stream:
+def load_json(file: str) -> typing.Dict:
+    with open(file) as stream:
         return json.load(stream)
 
 
-def prepare_structure(arguments, configuration) -> [str, typing.Set[str]]:
+def prepare_structure(arguments, configuration) -> StructureTuple:
     logging.info("Preparing structure ...")
-    structure = configuration["structure"]
-    structure_file = os.path.join(arguments["working"], "structure-raw.pdb")
-    prepare_raw_structure_file(arguments, structure, structure_file)
-    available_chains = get_structure_chains(structure_file)
-
-    result_path = os.path.join(arguments["output"], "structure.pdb")
-    shutil.copy(structure_file, result_path)
-
-    chains = structure.get("chains", None)
-    working_path = os.path.join(arguments["working"], "structure.pdb")
-    if chains is None or len(chains) == 0:
-        logging.info("Using whole structure file.")
-        shutil.copy(structure_file, working_path)
-        return working_path, working_path, available_chains
-
-    requested_chains = {item for item in chains if item}
-    if not requested_chains.issubset(available_chains):
-        raise Exception(
-            f"Requested chains {list(requested_chains)} but only"
-            f"{list(available_chains)} are available.")
-
+    raw_structure_file = prepare_raw_structure_file(
+        arguments, configuration["structure"])
+    chains = configuration["structure"].get("chains", None)
     execute_command(
-        f"{PROTEIN_UTILS_CMD} -a filter-by-chain"
-        f" --structure {structure_file}"
-        f" --output {working_path}"
-        f" --chains {','.join(requested_chains)}")
+        f"{PROTEIN_UTILS_CMD} PrepareForP2Rrank"
+        f" --input {raw_structure_file}"
+        f" --output {arguments['working']}"
+        + " --chains=" + ",".join(chains) if chains is not None else "")
+    structure_info = load_json(
+        os.path.join(arguments["working"], "structure-info.json"))
+    structure_file = os.path.join(arguments["working"], "structure.pdb")
+    chains_to_use = filter_amino_chains(structure_info, chains)
+    fasta_files = {
+        key: f"chain_{value}.fasta"
+        for key, value in chains_to_use.items()
+    }
+    return StructureTuple(
+        raw_structure_file, structure_file, fasta_files,
+        set(chains_to_use.keys()))
 
-    logging.info("Preparing structure ... done")
-    logging.debug(f"Path: {working_path}")
-    logging.debug(f"Chains: {' '.join(requested_chains)}")
-    return result_path, working_path, requested_chains
 
-
-def prepare_raw_structure_file(arguments, structure, structure_file: str):
+def prepare_raw_structure_file(arguments, structure):
+    structure_file = os.path.join(arguments["working"], "structure-raw.pdb")
     if structure.get("code", None) is not None:
         url = "https://files.rcsb.org/download/" \
               + structure["code"] \
@@ -138,22 +120,7 @@ def prepare_raw_structure_file(arguments, structure, structure_file: str):
         shutil.copy(input_path, structure_file)
     else:
         raise Exception("Missing structure file information.")
-
-
-def get_structure_chains(structure_file: str):
-    logging.debug("Reading chains ...")
-    parser = Bio.PDB.PDBParser()
-    structure = parser.get_structure("structure", structure_file)
-
-    model_count = len(structure)
-    if not model_count == 1:
-        raise Exception(
-            f"The structure file must contain exactly one model, "
-            f"but contains {model_count}")
-
-    available_chains = {chain.id for model in structure for chain in model}
-    logging.debug(f"Reading chains ... done")
-    return available_chains
+    return structure_file
 
 
 def download(url: str, destination: str) -> None:
@@ -163,36 +130,71 @@ def download(url: str, destination: str) -> None:
         stream.write(response.content)
 
 
+def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
+    """
+    Check that all required chains are in the structure info file.
+    Select chains for conservation - only amino chains.
+    """
+    if chains is None:
+        # Use all amino we got.
+        return {
+            chain_info["name"]: chain_info["id"]
+            for chain_info in structure_info["chains"]
+            if "amino" in chain_info["types"]
+        }
+    chains_found = set()
+    result = {}
+    for required_chain_name in chains:
+        for chain_info in structure_info["chains"]:
+            if not chain_info["name"] == required_chain_name:
+                continue
+            chains_found.add(required_chain_name)
+            if "amino" not in chain_info["types"]:
+                continue
+            result[required_chain_name] = chain_info["id"]
+    if not set(chains).issubset(chains_found):
+        raise Exception(
+            f"Requested chains {chains} but only"
+            f"{list(chains_found)} are available.")
+    return result
+
+
 def execute_command(command: str):
-    logging.debug("Executing '%s'", command)
     result = subprocess.run(command, shell=True, env=os.environ.copy())
     # Throw for non-zero (failure) return code.
     result.check_returncode()
 
 
 def prepare_conservation(
-        structure_file: str, chains: typing.Set[str],
-        configuration, arguments) \
-        -> typing.Dict[str, str]:
-    if "conservation" not in configuration \
-            or not configuration["conservation"].get("compute", False):
+        configuration, arguments, structure: StructureTuple) \
+        -> typing.Dict[str, ConservationTuple]:
+    if should_use_conservation(configuration):
         logging.info("No conservation is used.")
         return dict()
     conservation_options = configuration["conservation"]
     if conservation_options.get("hssp", None) is not None:
         return prepare_conservation_from_hssp(
-            conservation_options, arguments["working"], chains)
+            conservation_options, arguments["working"], structure.chains)
     elif conservation_options.get("msaFile", None) is not None:
         return prepare_conservation_from_msa(
-            chains, conservation_options,
+            structure.chains, conservation_options,
             arguments["input"], arguments["working"])
     else:
-        return compute_from_structure(structure_file, chains, arguments)
+        return {
+            chain: compute_from_structure_for_chain(
+                chain, fasta_file, arguments)
+            for chain, fasta_file in structure.fasta_files.items()
+        }
+
+
+def should_use_conservation(configuration) -> bool:
+    return "conservation" not in configuration \
+           or not configuration["conservation"].get("compute", False)
 
 
 def prepare_conservation_from_hssp(
         conservation_options, working_dir: str,
-        chains: typing.Set[str]) -> typing.Dict[str, str]:
+        chains: typing.Set[str]) -> typing.Dict[str, ConservationTuple]:
     hssp_code = conservation_options["hssp"]
     result = {}
     for chain in chains:
@@ -203,7 +205,7 @@ def prepare_conservation_from_hssp(
             working_dir,
             f"structure_{chain}.score")
         gunzip_file(source_file, target_file)
-        result[chain] = target_file
+        result[chain] = ConservationTuple(target_file, None)
     return result
 
 
@@ -215,7 +217,7 @@ def gunzip_file(source: str, target: str):
 
 def prepare_conservation_from_msa(
         chains: typing.Set[str], options, input_dir, working_root_dir) \
-        -> typing.Dict[str, str]:
+        -> typing.Dict[str, ConservationTuple]:
     if not len(chains) == 1:
         raise Exception(
             f"Custom MSA can be used only with one chain,"
@@ -224,48 +226,28 @@ def prepare_conservation_from_msa(
     msa_file = os.path.join(input_dir, options["msaFile"])
     target_file = os.path.join(working_root_dir, f"structure_{chain}.score")
     conservation.compute_jensen_shannon_divergence(msa_file, target_file)
-    return {chain: target_file}
-
-
-def compute_from_structure(
-        structure_file: str, chains: typing.Set[str], arguments) \
-        -> typing.Dict[str, str]:
-    return {
-        chain: compute_from_structure_for_chain(
-            structure_file, chain, arguments)
-        for chain in chains
-    }
+    return {chain: ConservationTuple(target_file, msa_file)}
 
 
 def compute_from_structure_for_chain(
-        structure_file: str, chain: str, arguments) -> str:
+        chain: str, fasta_file_name: str, arguments) -> ConservationTuple:
     working_dir = os.path.join(arguments["working"], f"conservation-{chain}")
-    fasta_file = os.path.join(working_dir, "sequence.fasta")
+    fasta_file = os.path.join(arguments["working"], fasta_file_name)
     os.makedirs(working_dir, exist_ok=True)
-
-    # Extract FASTA file.
-    execute_command(
-        f"{PROTEIN_UTILS_CMD} "
-        f"-a extract-chain-sequence "
-        f" --structure {structure_file}"
-        f" --output {fasta_file}"
-        f" --chain {chain}")
-
-    target_file = os.path.join(working_dir, f"structure_{chain}.score")
-    conservation.compute_conservation(fasta_file, working_dir, target_file)
-    return target_file
+    target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
+    msa_file = conservation.compute_conservation(
+        fasta_file, working_dir, target_file)
+    return ConservationTuple(target_file, msa_file)
 
 
 def execute_p2rank(
-        arguments,
-        structure_file: str,
-        configuration,
-        conservation_files: typing.Dict[str, str]) -> str:
+        arguments, structure_file: str, configuration,
+        conservation_files: typing.Dict[str, ConservationTuple]) -> str:
     """Execute p2rank and return output directory."""
 
     # Prepare inputs.
     input_dir = os.path.join(arguments["working"], "p2rank-input")
-    os.makedirs(input_dir)
+    os.makedirs(input_dir, exist_ok=True)
     input_structure_file = os.path.join(input_dir, "structure.pdb")
     shutil.copy(structure_file, input_structure_file)
     prepare_p2rank_conservation_files(input_dir, conservation_files)
@@ -280,7 +262,7 @@ def execute_p2rank(
     command = f"{p2rank_sh} predict " \
               f"-c {p2rank_config} " \
               f"-threads 1 " \
-              f"-f {structure_file} " \
+              f"-f {input_structure_file} " \
               f"-o {output_dir} " \
               f"--log_to_console 1"
 
@@ -290,11 +272,14 @@ def execute_p2rank(
 
 
 def prepare_p2rank_conservation_files(
-        input_dir: str, conservation_files: typing.Dict[str, str]):
-    for chain, chain_file in conservation_files.items():
+        input_dir: str,
+        conservation_files: typing.Dict[str, ConservationTuple]):
+    for chain, chain_tuple in conservation_files.items():
         input_chain_file = os.path.join(
-            input_dir, f"structure{chain}pdb.seq.fasta.hom.gz")
-        gzip_file(chain_file, input_chain_file)
+            input_dir, f"structure{chain.upper()}.pdb.seq.fasta.hom.gz")
+        gzip_file(chain_tuple.file, input_chain_file)
+        # TODO Update for next p2rank release
+        # shutil.copy(chain_tuple.file, input_chain_file)
 
 
 def select_p2rank_configuration(configuration) -> str:
@@ -304,44 +289,44 @@ def select_p2rank_configuration(configuration) -> str:
         return "default"
 
 
-def gzip_file(source: str, target: str):
-    with open(source, "rb") as input_stream, \
-            gzip.open(target, "wb") as output_stream:
-        output_stream.writelines(input_stream)
-
-
-def process_p2rank_output(
-        full_structure_file: str, p2rank_directory: str, output_directory: str,
-        conservation_files: typing.Dict[str, str]):
-    zip_directory(
+def prepare_download_data(
+        arguments,
+        p2rank_directory: str,
+        structure: StructureTuple,
+        conservation_files: typing.Dict[str, ConservationTuple]):
+    download_dir = os.path.join(arguments["working"], "public")
+    os.makedirs(download_dir, exist_ok=True)
+    shutil.copytree(
         os.path.join(p2rank_directory, "visualizations"),
-        os.path.join(output_directory, "visualizations.zip"))
-
-    predictions_file = \
-        os.path.join(p2rank_directory, "structure.pdb_predictions.csv")
-    residues_file = \
-        os.path.join(p2rank_directory, "structure.pdb_residues.csv")
-
-    output_prediction_file = os.path.join(output_directory, "prediction.json")
-    output_sequence_file = os.path.join(output_directory, "sequence.json")
-
-    conservation_args = ""
-    if len(conservation_files) > 0:
-        conservation_args = " --conservation " + \
-                            " --conservation ".join([
-                                f"{chain}={file}" for chain, file in
-                                conservation_files.items()
-                            ])
-
-    command = f"{PROTEIN_UTILS_CMD} -a p2rank-web" \
-              f" --structure={full_structure_file}" \
-              f" --prediction={predictions_file}" \
-              f" --residues={residues_file}" \
-              f" --output-pocket={output_prediction_file}" \
-              f" --output-sequence={output_sequence_file}" \
-              f" {conservation_args}"
-
-    execute_command(command)
+        os.path.join(download_dir, "visualizations"),
+    )
+    shutil.copy(
+        os.path.join(p2rank_directory, "structure.pdb_predictions.csv"),
+        os.path.join(download_dir, "predictions.csv")
+    )
+    shutil.copy(
+        os.path.join(p2rank_directory, "structure.pdb_residues.csv"),
+        os.path.join(download_dir, "residues.csv")
+    )
+    shutil.copy(
+        structure.raw_file,
+        os.path.join(download_dir, "structure.pdb")
+    )
+    for chain, item in conservation_files.items():
+        if item.msa_file is not None:
+            shutil.copy(
+                item.msa_file,
+                os.path.join(download_dir, "msa_" + chain + ".fasta")
+            )
+        shutil.copy(
+            item.file,
+            os.path.join(download_dir, "conservation_" + chain + ".hom")
+        )
+    # Pack into archive and remove temporary data.
+    zip_directory(
+        os.path.join(download_dir),
+        os.path.join(arguments["output"], "visualizations.zip"))
+    shutil.rmtree(download_dir)
 
 
 def zip_directory(directory_to_zip: str, output: str):
@@ -352,6 +337,46 @@ def zip_directory(directory_to_zip: str, output: str):
                     os.path.join(root, file),
                     os.path.join(directory_to_zip))
                 stream.write(os.path.join(root, file), path_in_zip)
+
+
+def gzip_file(source: str, target: str):
+    with open(source, "rb") as input_stream, \
+            gzip.open(target, "wb") as output_stream:
+        output_stream.writelines(input_stream)
+
+def prepare_p2rank_web_data(
+        p2rank_directory: str,
+        structure: StructureTuple,
+        conservation_files: typing.Dict[str, ConservationTuple],
+        output_directory):
+ 
+    predictions_file = \
+        os.path.join(p2rank_directory, "structure.pdb_predictions.csv")
+
+    residues_file = \
+        os.path.join(p2rank_directory, "structure.pdb_residues.csv")
+
+    shutil.copy(
+        structure.raw_file,
+        os.path.join(output_directory, "structure.pdb")
+    )
+
+    conservation_args = ""
+    if len(conservation_files) > 0:
+        conservation_args = " --conservation " + \
+                            " --conservation ".join([
+                                f"{chain}={item.file}" for chain, item in
+                                conservation_files.items()
+                            ])
+
+    command = f"{PROTEIN_UTILS_CMD} PrepareForPrankWeb" \
+              f" --structure={structure.raw_file}" \
+              f" --prediction={predictions_file}" \
+              f" --residues={residues_file}" \
+              f" --output={output_directory}" \
+              f" {conservation_args}"
+
+    execute_command(command)
 
 
 if __name__ == "__main__":

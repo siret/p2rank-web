@@ -52,10 +52,12 @@ execute_command: typing.Callable[[str], None] = lambda cmd: None
 
 
 def compute_conservation(
-        input_file: str, working_dir: str, output_file: str) -> None:
+        input_file: str, working_dir: str, output_file: str) -> str:
+    """Compute conversation to given file, return path to utilized MSA file."""
     msa_file = os.path.join(working_dir, "msa")
     compute_msa(input_file, working_dir, msa_file)
     compute_jensen_shannon_divergence(msa_file, output_file)
+    return msa_file
 
 
 # region Compute alignment
