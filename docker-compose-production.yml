@@ -4,8 +4,8 @@ services:
     build:
       context: ./
       dockerfile: ./monitor/Dockerfile
-      args:
-        USER: ${USER}
+      labels:
+        com.github.cusbg.project: "p2rank"
     restart: unless-stopped
     networks:
       - p2rank-online
