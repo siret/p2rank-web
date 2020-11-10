@@ -2,6 +2,9 @@ package cz.siret.protein.utils.action;
 
 import org.slf4j.helpers.MessageFormatter;
 
+/**
+ * Should be used to report
+ */
 public class ActionFailed extends Exception {
 
     protected final String message;

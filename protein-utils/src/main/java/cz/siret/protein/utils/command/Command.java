@@ -1,34 +1,32 @@
 package cz.siret.protein.utils.command;
 
+import cz.siret.protein.utils.action.parsecommandline.ParseCommandLine;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 
-public abstract class Command<T> {
+public abstract class Command {
 
     /**
-     * Name used to call module from command line.
+     * @return Name used to call given command.
      */
-    private final String moduleName;
-
-    public Command(String moduleName) {
-        this.moduleName = moduleName;
-    }
+    public abstract String getName();
 
     /**
-     * @return Options object used to parse command line arguments.
+     * @return Short description shown in the command list.
      */
-    public abstract Options createOptions();
+    public abstract String getDescription();
 
     /**
-     * @param args Parsed command line arguments.
-     * @return Configuration object for this action.
+     * Execute given command.
      */
-    public abstract T loadOptions(CommandLine args);
+    public abstract void execute(String[] args) throws Exception;
 
-    public abstract void execute(T configuration) throws Exception;
-
-    public String getModuleName() {
-        return moduleName;
+    protected CommandLine parseCommandLine(Options options, String[] args) {
+        ParseCommandLine parser = new ParseCommandLine(
+                "protein-utils.jar " + getName(),
+                getDescription()
+        );
+        return parser.parseCommandLine(options, args);
     }
 
 }

@@ -1,7 +1,7 @@
 package cz.siret.protein.utils;
 
-import cz.siret.protein.utils.command.PrepareDataForP2RankWeb;
-import cz.siret.protein.utils.command.StructureToFasta;
+import cz.siret.protein.utils.stash.command.PrepareDataForP2RankWeb;
+import cz.siret.protein.utils.stash.command.StructureToFasta;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class Issues {
     public void issue27() throws Exception {
         StructureToFasta.Configuration configuration =
                 new StructureToFasta.Configuration();
-        configuration.chains = Arrays.asList("A","B","C","P","T");
+        configuration.chains = Arrays.asList("P");
         configuration.structureFile =  TestUtils.fileFromResource(
                 "issues/27/7bv2.pdb");
         File working = Files.createTempDirectory("protein-utils-test").toFile();
