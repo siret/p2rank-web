@@ -11,7 +11,7 @@ RUN chmod +x ./gradlew && ./gradlew installDist
 FROM debian:buster-20200607 as task-runner-build
 
 RUN apt-get update \
- && apt-get -y --no-install-recommends install openjdk-11-jdk git
+ && apt-get -y --no-install-recommends install openjdk-11-jdk git vim
 
 WORKDIR /opt/task-runner
 
@@ -99,7 +99,7 @@ RUN pip3 install requests==2.24.0 biopython==1.78
 WORKDIR /data/p2rank/
 COPY ./task-runner ./templates
 
-# environment variables and setup
+# environment variables
 
 ENV BLASTDB="/data/conservation/blast-database/"
 ENV HSSPTDB="/data/conservation/hssp/"
@@ -109,18 +109,26 @@ ENV PSIBLAST_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/psiblast"
 ENV BLASTDBCMD_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/blastdbcmd"
 ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
 ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
+ENV PDB_DIR="/tmp/pdb/"
+ENV PDB_CACHE_DIR ="/tmp/pdb-cache/"
 
 ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
 
 ENV DEFAULT_P2RANK="/opt/p2rank/p2rank_2.1"
+
+# Prepare temporary directories
+
+USER ${USER}:${USER}
+
+RUN mkdir ${PDB_DIR} && mkdir ${PDB_CACHE_DIR}
+
+# endtry point and interface
 
 EXPOSE 8020
 
 WORKDIR /opt/p2rank-runtime
 
 USER ${USER}:${USER}
-
-#
 
 CMD [ \
     "/opt/task-runner/bin/task-runner-cli", \
