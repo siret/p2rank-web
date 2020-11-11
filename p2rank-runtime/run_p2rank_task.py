@@ -94,7 +94,7 @@ def prepare_structure(arguments, configuration) -> StructureTuple:
         f"{PROTEIN_UTILS_CMD} PrepareForP2Rrank"
         f" --input {raw_structure_file}"
         f" --output {arguments['working']}"
-        + " --chains=" + ",".join(chains) if chains is not None else "")
+        + (" --chains=" + ",".join(chains) if chains is not None else ""))
     structure_info = load_json(
         os.path.join(arguments["working"], "structure-info.json"))
     structure_file = os.path.join(arguments["working"], "structure.pdb")
