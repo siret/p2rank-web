@@ -152,7 +152,7 @@ def _execute_psiblast(pdb_file: str, output_file: str, database: str) -> None:
     output_format = "6 sallseqid qcovs pident"
     cmd = "{} < {} -db {} -outfmt '{}' -evalue 1e-5 > {}".format(
         PSIBLAST_CMD, pdb_file, database, output_format, output_file)
-    logging.debug("Executing BLAST ...")
+    logging.debug("Executing PSIBLAST ...")
     execute_command(cmd)
 
 

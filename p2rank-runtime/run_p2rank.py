@@ -10,7 +10,7 @@ import argparse
 import typing
 
 import conservation
-import run_p2rank_task as p2rank
+import run_p2rank_task as p2rank_task
 
 PROTEIN_UTILS_CMD = os.environ["PROTEIN_UTILS_CMD"]
 
@@ -40,9 +40,9 @@ def _read_arguments() -> typing.Dict[str, str]:
 def main(arguments):
     arguments["working"] = os.path.join(arguments["output"], "working")
     #
-    p2rank.init_logging()
-    conservation.execute_command = p2rank.execute_command
-    p2rank.prepare_directories(arguments)
+    p2rank_task.init_logging()
+    conservation.execute_command = p2rank_task.execute_command
+    p2rank_task.prepare_directories(arguments)
     configuration = {
         "structure": {
             "code": arguments["pdb"],
@@ -56,21 +56,16 @@ def main(arguments):
             "hsspCode": None,
         }
     }
-    full_structure_file, structure_file, chains = \
-        p2rank.prepare_structure(arguments, configuration)
-    conservation_files = p2rank.prepare_conservation(
-        structure_file, chains, configuration, arguments)
+    structure = p2rank_task.prepare_structure(arguments, configuration)
+    conservation_files = p2rank_task.prepare_conservation(
+        configuration, arguments, structure)
 
-    print("Configuration:", configuration)
-    print("Structure    :", structure_file)
-    print("Conservation :", conservation_files)
-
-    p2rank_output = p2rank.execute_p2rank(
-        arguments, structure_file, configuration, conservation_files)
-
-    p2rank.process_p2rank_output(
-        full_structure_file, p2rank_output, arguments["output"],
-        conservation_files)
+    p2rank_output = p2rank_task.execute_p2rank(
+        arguments, structure.file, configuration, conservation_files)
+    p2rank_task.collect_download_data(
+        p2rank_output, structure, conservation_files, arguments["output"])
+    p2rank_task.prepare_p2rank_web_data(
+        p2rank_output, structure, conservation_files, arguments["output"])
 
 
 if __name__ == "__main__":

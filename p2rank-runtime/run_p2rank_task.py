@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Run p2rank task. 
+# Run p2rank task.
 #
 
 import os
@@ -296,37 +296,47 @@ def prepare_download_data(
         conservation_files: typing.Dict[str, ConservationTuple]):
     download_dir = os.path.join(arguments["working"], "public")
     os.makedirs(download_dir, exist_ok=True)
-    shutil.copytree(
-        os.path.join(p2rank_directory, "visualizations"),
-        os.path.join(download_dir, "visualizations"),
-    )
-    shutil.copy(
-        os.path.join(p2rank_directory, "structure.pdb_predictions.csv"),
-        os.path.join(download_dir, "predictions.csv")
-    )
-    shutil.copy(
-        os.path.join(p2rank_directory, "structure.pdb_residues.csv"),
-        os.path.join(download_dir, "residues.csv")
-    )
-    shutil.copy(
-        structure.raw_file,
-        os.path.join(download_dir, "structure.pdb")
-    )
-    for chain, item in conservation_files.items():
-        if item.msa_file is not None:
-            shutil.copy(
-                item.msa_file,
-                os.path.join(download_dir, "msa_" + chain + ".fasta")
-            )
-        shutil.copy(
-            item.file,
-            os.path.join(download_dir, "conservation_" + chain + ".hom")
-        )
+    collect_download_data(
+        p2rank_directory, structure, conservation_files, download_dir)
     # Pack into archive and remove temporary data.
     zip_directory(
         os.path.join(download_dir),
         os.path.join(arguments["output"], "visualizations.zip"))
     shutil.rmtree(download_dir)
+
+
+def collect_download_data(
+        p2rank_directory: str,
+        structure: StructureTuple,
+        conservation_files: typing.Dict[str, ConservationTuple],
+        output_dir: str
+):
+    shutil.copytree(
+        os.path.join(p2rank_directory, "visualizations"),
+        os.path.join(output_dir, "visualizations"),
+    )
+    shutil.copy(
+        os.path.join(p2rank_directory, "structure.pdb_predictions.csv"),
+        os.path.join(output_dir, "predictions.csv")
+    )
+    shutil.copy(
+        os.path.join(p2rank_directory, "structure.pdb_residues.csv"),
+        os.path.join(output_dir, "residues.csv")
+    )
+    shutil.copy(
+        structure.raw_file,
+        os.path.join(output_dir, "structure.pdb")
+    )
+    for chain, item in conservation_files.items():
+        if item.msa_file is not None:
+            shutil.copy(
+                item.msa_file,
+                os.path.join(output_dir, "msa_" + chain + ".fasta")
+            )
+        shutil.copy(
+            item.file,
+            os.path.join(output_dir, "conservation_" + chain + ".hom")
+        )
 
 
 def zip_directory(directory_to_zip: str, output: str):
@@ -344,12 +354,12 @@ def gzip_file(source: str, target: str):
             gzip.open(target, "wb") as output_stream:
         output_stream.writelines(input_stream)
 
+
 def prepare_p2rank_web_data(
         p2rank_directory: str,
         structure: StructureTuple,
         conservation_files: typing.Dict[str, ConservationTuple],
         output_directory):
- 
     predictions_file = \
         os.path.join(p2rank_directory, "structure.pdb_predictions.csv")
 
