@@ -110,7 +110,7 @@ ENV BLASTDBCMD_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/blastdbcmd"
 ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
 ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
 ENV PDB_DIR="/tmp/pdb/"
-ENV PDB_CACHE_DIR ="/tmp/pdb-cache/"
+ENV PDB_CACHE_DIR="/tmp/pdb-cache/"
 
 ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
 
