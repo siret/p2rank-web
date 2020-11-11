@@ -92,7 +92,9 @@ RUN chmod a+x ./p2rank_2.1/run_p2rank.sh
 WORKDIR /opt/p2rank-runtime
 COPY ./p2rank-runtime ./
 
-RUN pip3 install requests==2.24.0 biopython==1.78
+RUN pip3 install requests==2.24.0
+
+RUN chmod a+x ./run_p2rank.py
 
 # task runner definitions
 
