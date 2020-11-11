@@ -24,10 +24,10 @@ def _read_arguments() -> typing.Dict[str, str]:
     parser.add_argument("--pdb-file", required=False,
                         help="PDB file.")
     parser.add_argument("--input", required=False,
-                        default="/tmp/p2rank-input",
+                        default="/data/host",
                         help="Input directory.")
     parser.add_argument("--output", required=False,
-                        default="/tmp/p2rank-output",
+                        default="/data/host",
                         help="Output directory.")
     parser.add_argument("--conservation", action="store_true",
                         help="Use conservation.")
