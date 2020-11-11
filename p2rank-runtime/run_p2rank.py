@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Run p2rank without the task, designed to be used as a docker command
@@ -8,6 +8,7 @@
 import os
 import argparse
 import typing
+import shutil
 
 import conservation
 import run_p2rank_task as p2rank_task
@@ -23,16 +24,13 @@ def _read_arguments() -> typing.Dict[str, str]:
                         help="PDB code.")
     parser.add_argument("--pdb-file", required=False,
                         help="PDB file.")
-    parser.add_argument("--input", required=False,
-                        default="/data/host",
+    parser.add_argument("--input", default="./",
                         help="Input directory.")
-    parser.add_argument("--output", required=False,
-                        default="/data/host",
+    parser.add_argument("--output", default="./",
                         help="Output directory.")
     parser.add_argument("--conservation", action="store_true",
                         help="Use conservation.")
-    parser.add_argument("--p2rank", required=True,
-                        default=os.environ["DEFAULT_P2RANK"],
+    parser.add_argument("--p2rank", default=os.environ["DEFAULT_P2RANK"],
                         help="p2rank directory.")
     return vars(parser.parse_args())
 
@@ -45,8 +43,8 @@ def main(arguments):
     p2rank_task.prepare_directories(arguments)
     configuration = {
         "structure": {
-            "code": arguments["pdb"],
-            "file": arguments["pdb-file"],
+            "code": arguments.get("pdb", None),
+            "file": arguments.get("pdb_file", None),
             "chains": None
         },
         "conservation": {
@@ -56,6 +54,7 @@ def main(arguments):
             "hsspCode": None,
         }
     }
+
     structure = p2rank_task.prepare_structure(arguments, configuration)
     conservation_files = p2rank_task.prepare_conservation(
         configuration, arguments, structure)
@@ -64,8 +63,8 @@ def main(arguments):
         arguments, structure.file, configuration, conservation_files)
     p2rank_task.collect_download_data(
         p2rank_output, structure, conservation_files, arguments["output"])
-    p2rank_task.prepare_p2rank_web_data(
-        p2rank_output, structure, conservation_files, arguments["output"])
+
+    shutil.rmtree(arguments["working"])
 
 
 if __name__ == "__main__":
