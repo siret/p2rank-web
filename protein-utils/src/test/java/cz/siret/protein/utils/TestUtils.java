@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.biojava.nbio.structure.Structure;
+import org.biojava.nbio.structure.io.PDBFileReader;
 import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
@@ -19,6 +21,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TestUtils {
+
+    public static Structure fetchPdb(String id) throws IOException {
+        PDBFileReader reader = new PDBFileReader();
+        String urlAsStr = "https://files.rcsb.org/download/" + id + ".pdb";
+        return reader.getStructure(new URL(urlAsStr));
+    }
 
     public static File fileFromResource(String fileName) {
         final URL url = Thread.currentThread().getContextClassLoader().
