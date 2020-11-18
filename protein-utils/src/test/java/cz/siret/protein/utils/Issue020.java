@@ -16,7 +16,7 @@ public class Issue020 {
      */
     @Test
     @Timeout(value = 15, unit = TimeUnit.SECONDS)
-    public void issue20For1gac() throws Exception {
+    public void issue020For1gac() throws Exception {
         Structure structure = TestUtils.fetchPdb("7bv2");
         LigandSelector ligandSelector = new LigandSelector();
 
@@ -31,7 +31,7 @@ public class Issue020 {
      */
     @Test
     @Timeout(value = 10, unit = TimeUnit.SECONDS)
-    public void issue20For19hc() throws Exception {
+    public void issue020For19hc() throws Exception {
         Structure structure = TestUtils.fetchPdb("19hc");
         LigandSelector ligandSelector = new LigandSelector();
 

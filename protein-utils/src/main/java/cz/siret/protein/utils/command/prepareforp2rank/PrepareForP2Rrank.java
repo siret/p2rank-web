@@ -5,7 +5,6 @@ import cz.siret.protein.utils.action.chainselector.ChainSelector;
 import cz.siret.protein.utils.action.chaintosequence.ChainToSequence;
 import cz.siret.protein.utils.adapter.StructureAdapter;
 import cz.siret.protein.utils.command.Command;
-import cz.siret.protein.utils.util.ProteinUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
@@ -110,18 +109,13 @@ public class PrepareForP2Rrank extends Command {
         Map<String, Chain> result = new HashMap<>();
         if (configuration.chains == null) {
             for (Chain chain : structure.getChains()) {
-                // We also skip HETATM chains, as use probably do not need them.
-                List<GroupType> chainTypes = collectGroupTypes(chain);
-                if (chainTypes.contains(GroupType.HETATM)) {
-                    continue;
-                }
                 result.put(chain.getId(), chain);
             }
         } else {
             ChainSelector chainSelector = new ChainSelector();
             for (String chainName : configuration.chains) {
-                Chain chain = chainSelector.selectChain(structure, chainName);
-                result.put(chain.getId(), chain);
+                chainSelector.selectByPdbName(structure, chainName).forEach(
+                        chain -> result.put(chain.getId(), chain));
             }
         }
         return result;
