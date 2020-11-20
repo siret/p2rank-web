@@ -235,8 +235,9 @@ def compute_from_structure_for_chain(
     fasta_file = os.path.join(arguments["working"], fasta_file_name)
     os.makedirs(working_dir, exist_ok=True)
     target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
+    configuration = conservation.MsaConfiguration()
     msa_file = conservation.compute_conservation(
-        fasta_file, working_dir, target_file)
+        fasta_file, working_dir, target_file, configuration)
     return ConservationTuple(target_file, msa_file)
 
 
