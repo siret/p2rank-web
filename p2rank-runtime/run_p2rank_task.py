@@ -324,10 +324,6 @@ def collect_download_data(
         os.path.join(p2rank_directory, "structure.pdb_residues.csv"),
         os.path.join(output_dir, "residues.csv")
     )
-    shutil.copy(
-        structure.raw_file,
-        os.path.join(output_dir, "structure.pdb")
-    )
     for chain, item in conservation_files.items():
         if item.msa_file is not None:
             shutil.copy(
@@ -368,7 +364,7 @@ def prepare_p2rank_web_data(
         os.path.join(p2rank_directory, "structure.pdb_residues.csv")
 
     shutil.copy(
-        structure.raw_file,
+        structure.file,
         os.path.join(output_directory, "structure.pdb")
     )
 
