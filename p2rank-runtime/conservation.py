@@ -184,7 +184,7 @@ def _find_similar_sequences_in_database(
     logging.info("Filtering files ...")
     psiblast_file_filtered = os.path.join(working_dir, "psiblast-filtered")
     filtered_count = _filter_psiblast_file(
-        psiblast_file, psiblast_file_filtered)
+        psiblast_file, psiblast_file_filtered, configuration)
     if filtered_count < configuration.minimum_sequence_count:
         logging.info("Not enough sequences: %s", filtered_count)
         return False
@@ -197,7 +197,7 @@ def _find_similar_sequences_in_database(
     cdhit_log_file = os.path.join(working_dir, "cd-hit.log")
     cdhit_output_file = os.path.join(working_dir, "cd-hit-output")
     _execute_cdhit(sequences_file, cdhit_output_file, cdhit_log_file)
-    if not _enough_blast_results(output_file, configuration):
+    if not _enough_blast_results(cdhit_output_file, configuration):
         return False
     _select_sequences(
         cdhit_output_file, output_file,
