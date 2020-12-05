@@ -31,3 +31,8 @@ body {
 .container {
     background-color: transparent;
 }
+
+.row .profile {
+    height: 35rem;
+    text-align: center;
+}
