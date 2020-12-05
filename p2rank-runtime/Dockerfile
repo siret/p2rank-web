@@ -44,13 +44,6 @@ RUN mkdir /opt/conservation && chown user:user /opt/conservation \
  && mkdir /data && chown user:user /data \
  && mkdir /data/p2rank && chown user:user /data/p2rank
 
-# protein-utils
-
-WORKDIR /opt/protein-utils
-COPY --from=protein-utils-build /opt/protein-utils/dist ./
-RUN ls -l
-RUN chmod a+x /opt/protein-utils/bin/protein-utils
-
 # task runner
 
 WORKDIR /opt/task-runner
@@ -84,16 +77,26 @@ WORKDIR /opt/p2rank
 RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
  && tar -xf p2rank.tar.gz \
  && rm p2rank.tar.gz
-COPY ./p2rank/p2rank_2.1.sh ./p2rank_2.1/run_p2rank.sh
-RUN chmod a+x ./p2rank_2.1/run_p2rank.sh
+ # p2rank archive contains version, we need to get rid of that
+ && mv p2rank_* default
+
+# p2rank executable
+
+COPY ./p2rank/p2rank_default.sh ./p2rank/default/p2rank.sh
+RUN chmod a+x ./p2rank/default/p2rank.sh
+
+# protein-utils
+
+WORKDIR /opt/protein-utils
+COPY --from=protein-utils-build /opt/protein-utils/dist ./
+RUN ls -l
+RUN chmod a+x /opt/protein-utils/bin/protein-utils
 
 # p2rank runtime
 
 WORKDIR /opt/p2rank-runtime
 COPY ./p2rank-runtime ./
-
 RUN pip3 install requests==2.24.0
-
 RUN chmod a+x ./run_p2rank.py
 
 # task runner definitions
@@ -115,8 +118,6 @@ ENV PDB_DIR="/tmp/pdb/"
 ENV PDB_CACHE_DIR="/tmp/pdb-cache/"
 
 ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
-
-ENV DEFAULT_P2RANK="/opt/p2rank/p2rank_2.1"
 
 # Prepare temporary directories
 

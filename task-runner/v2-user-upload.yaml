@@ -9,7 +9,7 @@ template:
     - name: 'p2rank'
       command: >-
         python3 /opt/p2rank-runtime/run_p2rank_task.py
-        --p2rank /opt/p2rank/p2rank_2.1
+        --p2rank /opt/p2rank/default
         --input "${_.input}"
         --working "${_.working}"
         --output "${_.public}"

@@ -255,7 +255,7 @@ def execute_p2rank(
 
     # Prepare command.
     output_dir = os.path.join(arguments["working"], "p2rank-output")
-    p2rank_sh = os.path.join(arguments["p2rank"], "run_p2rank.sh")
+    p2rank_sh = os.path.join(arguments["p2rank"], "p2rank.sh")
     p2rank_config = os.path.join(
         arguments["p2rank"], "config",
         select_p2rank_configuration(configuration))
@@ -273,14 +273,13 @@ def execute_p2rank(
 
 
 def prepare_p2rank_conservation_files(
-        input_dir: str,
+        p2rank_input_dir: str,
         conservation_files: typing.Dict[str, ConservationTuple]):
     for chain, chain_tuple in conservation_files.items():
-        input_chain_file = os.path.join(
-            input_dir, f"structure{chain.upper()}.pdb.seq.fasta.hom.gz")
-        gzip_file(chain_tuple.file, input_chain_file)
-        # TODO Update for next p2rank release
-        # shutil.copy(chain_tuple.file, input_chain_file)
+        chain_file = os.path.join(
+            p2rank_input_dir,
+            f"structure{chain.upper()}.hom")
+        shutil.copy(chain_tuple.file, chain_file)
 
 
 def select_p2rank_configuration(configuration) -> str:

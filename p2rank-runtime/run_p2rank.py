@@ -30,8 +30,8 @@ def _read_arguments() -> typing.Dict[str, str]:
                         help="Output directory.")
     parser.add_argument("--conservation", action="store_true",
                         help="Use conservation.")
-    parser.add_argument("--p2rank", default=os.environ["DEFAULT_P2RANK"],
-                        help="p2rank directory.")
+    parser.add_argument("--p2rank", default="/opt/p2rank/default",
+                        help="p2rank directory with run_p2rank.sh file.")
     return vars(parser.parse_args())
 
 
