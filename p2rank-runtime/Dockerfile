@@ -76,14 +76,14 @@ WORKDIR /opt/p2rank
 
 RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
  && tar -xf p2rank.tar.gz \
- && rm p2rank.tar.gz
+ && rm p2rank.tar.gz \
  # p2rank archive contains version, we need to get rid of that
  && mv p2rank_* default
 
 # p2rank executable
 
-COPY ./p2rank/p2rank_default.sh ./p2rank/default/p2rank.sh
-RUN chmod a+x ./p2rank/default/p2rank.sh
+COPY ./p2rank/p2rank_default.sh ./default/p2rank.sh
+RUN chmod a+x ./default/p2rank.sh 
 
 # protein-utils
 

@@ -5,7 +5,7 @@ export JAVA_OPTS="$JAVA_OPTS -Xmx4196m"
 export JAVA_OPTS="$JAVA_OPTS -XX:+CMSClassUnloadingEnabled -XX:+UseG1GC"
 
 # Set paths.
-export INSTALL_DIR="/opt/p2rank/p2rank"
+export INSTALL_DIR="/opt/p2rank/default"
 CLASSPATH="${INSTALL_DIR}/bin/p2rank.jar:${INSTALL_DIR}/bin/lib/*"
 
 # Determine the Java command to use to start the JVM.

@@ -1,5 +1,8 @@
 version: "3.8"
 services:
+  p2rank-api-gateway:
+    ports:
+      - "8020:80"
   p2rank-monitor:
     build:
       context: ./
@@ -10,12 +13,12 @@ services:
     networks:
       - p2rank-online
     environment:
-      P2RANK_WEB_MONITOR_GOOGLE_ANALYTICS: "UA-136777636-2"
+      P2RANK_WEB_MONITOR_GOOGLE_ANALYTICS: ""
   p2rank-web-runtime:
     build:
       args:
-        USER: "1002"
-    user: "1002"
+        USER: "1001"
+    user: "1001"
     volumes:
       - /data/conservation:/data/conservation
       - /data/p2rank-online:/data/p2rank/task
