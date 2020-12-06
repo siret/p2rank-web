@@ -18,6 +18,13 @@ export default class PocketList extends React.Component
   }, {}> {
 
   render() {
+    if (this.props.pockets.length === 0) {
+      return (
+        <div className="pockets">
+          <h3 className="text-center">No pockets found</h3>
+        </div>
+      );
+    }
     return (
       <div className="pockets">
         <h3 className="text-center">

@@ -24,6 +24,11 @@
 .pocket-list {
     height: calc(100vh - 52px); /* 52px is navbar */
 }
+
+.pockets {
+    padding-bottom: 2rem;
+}
+
 @media (min-width: 992px) {
     .pocket-list {
         overflow-y: scroll;
