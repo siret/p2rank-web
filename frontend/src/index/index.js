@@ -212,7 +212,6 @@ function doConservationClicked() {
 
 $(document).ready(function () {
   doConservationClicked();
-  updateChainSelector();
   $(".tooltip-hint").tooltip();
   document.getElementById("pdbUploadSubmit").onclick = function () {
     uploadPdbFile();
