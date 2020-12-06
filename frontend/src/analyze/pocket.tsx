@@ -110,6 +110,12 @@ export default class Pocket extends React.Component
         </p>
         <div style={{"clear": "both"}}/>
         <p style={{"float": "left"}} className="pocket-feature">
+          Probability score:</p>
+        <p style={{"float": "right"}}>
+          {pocket.probability}
+        </p>
+        <div style={{"clear": "both"}}/>
+        <p style={{"float": "left"}} className="pocket-feature">
           AA count:
         </p>
         <p style={{"float": "right"}}>

@@ -4,6 +4,7 @@ export interface PrankPocket {
   name: string;
   rank: number;
   score: number;
+  probability: number;
   conollyPoints: number;
   surfAtoms: number;
   centerX: number;
