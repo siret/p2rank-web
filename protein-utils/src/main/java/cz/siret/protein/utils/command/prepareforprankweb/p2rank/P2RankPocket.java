@@ -8,6 +8,8 @@ public class P2RankPocket {
 
     public float score;
 
+    public float probability;
+
     public int numOfConnollyPoints;
 
     public int numOfSurfaceAtoms;

@@ -23,27 +23,29 @@ public class ApplicationEntry {
     );
 
     public static void main(String[] args) {
-        (new ApplicationEntry()).run(args);
+        int result = (new ApplicationEntry()).run(args);
+        System.exit(result);
     }
 
-    private void run(String[] args) {
+    private int run(String[] args) {
         if (shouldShowHelp(args)) {
             System.out.println("Show help ...");
-            return;
+            return 0;
         }
         Command command = getCommand(args);
         if (command == null) {
             LOG.error("No command found!");
-            return;
+            return 1;
         }
         LOG.info("Running command: {}", command.getName());
         Instant start = Instant.now();
-        executeCommand(command, args);
+        int result = executeCommand(command, args);
         Duration duration = Duration.between(start, Instant.now());
         LOG.info(String.format("Finished in %02d:%02d:%02d",
                 duration.toHours(),
                 duration.toMinutesPart(),
                 duration.toSecondsPart()));
+        return result;
     }
 
     /**
@@ -69,13 +71,15 @@ public class ApplicationEntry {
         return null;
     }
 
-    private void executeCommand(Command command, String args[]) {
+    private int executeCommand(Command command, String args[]) {
         String[] argsWithoutCommand = Arrays.copyOfRange(args, 1, args.length);
         try {
             command.execute(argsWithoutCommand);
+            return 0;
         } catch (Exception ex) {
             LOG.error("Command execution failed.");
             LOG.info("Reason:", ex);
+            return 1;
         }
     }
 

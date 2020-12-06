@@ -21,25 +21,27 @@ public class P2RankAdapter {
     }
 
     private List<P2RankPocket> parsePredictionFile(InputStream stream) {
-        // name,rank,score,connolly_points,surf_atoms,
-        // center_x,center_y,center_z,residue_ids,surf_atom_ids
+        // name, rank, score, probability,
+        // sas_points, surf_atoms,
+        // center_x, center_y, center_z, residue_ids, surf_atom_ids
         Scanner scanner = new Scanner(stream);
         scanner.nextLine(); // Skip the header line
         List<P2RankPocket> result = new ArrayList<>();
         while (scanner.hasNextLine()) {
             P2RankPocket pocket = new P2RankPocket();
             String[] tokens = scanner.nextLine().split(",");
-            pocket.name = tokens[0];
-            pocket.rank = Integer.parseInt(tokens[1]);
-            pocket.score = Float.parseFloat(tokens[2]);
-            pocket.numOfConnollyPoints = Integer.parseInt(tokens[3]);
-            pocket.numOfSurfaceAtoms = Integer.parseInt(tokens[4]);
-            pocket.centerX = Float.parseFloat(tokens[5]);
-            pocket.centerY = Float.parseFloat(tokens[6]);
-            pocket.centerZ = Float.parseFloat(tokens[7]);
-            pocket.residueIds = tokens[8].split(" ");
+            pocket.name = tokens[0].trim();
+            pocket.rank = Integer.parseInt(tokens[1].trim());
+            pocket.score = Float.parseFloat(tokens[2].trim());
+            pocket.probability = Float.parseFloat(tokens[3].trim());
+            pocket.numOfConnollyPoints = Integer.parseInt(tokens[4].trim());
+            pocket.numOfSurfaceAtoms = Integer.parseInt(tokens[5].trim());
+            pocket.centerX = Float.parseFloat(tokens[6].trim());
+            pocket.centerY = Float.parseFloat(tokens[7].trim());
+            pocket.centerZ = Float.parseFloat(tokens[8].trim());
+            pocket.residueIds = tokens[9].trim().split(" ");
             pocket.surfAtomIds =
-                    Arrays.stream(tokens[9].split(" "))
+                    Arrays.stream(tokens[10].trim().split(" "))
                             .map(Integer::parseInt)
                             .toArray(Integer[]::new);
             result.add(pocket);
