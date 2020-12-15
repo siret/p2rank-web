@@ -24,7 +24,11 @@ def main(arguments):
         "structure": {
             "code": None,
             "file": "structure.pdb",
-            "chains": user_configuration.get("chains", [])
+            "chains": [
+                chain
+                for chain in user_configuration.get("chains", [])
+                if chain != ""
+            ]
         },
         "conservation": {
             "compute": user_configuration.get("conservation", False),
