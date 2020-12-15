@@ -20,4 +20,3 @@ template:
         --working "${_.working}"
         --output "${_.public}"
         --configuration "${_.working}/configuration.json"
-

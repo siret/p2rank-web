@@ -6,6 +6,11 @@ template:
   mergeErrOutToStdOut: true
   newLocationHttpTemplate: ./analyze?database=v2-user-upload&code={task}
   steps:
+    - name: 'prepare configuration'
+      command: >-
+        python3 /opt/p2rank-runtime/create_task_configuration_post.py
+        --input "${_.input}/configuration.json"
+        --output "${_.working}/configuration.json"
     - name: 'p2rank'
       command: >-
         python3 /opt/p2rank-runtime/run_p2rank_task.py
