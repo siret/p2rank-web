@@ -30,11 +30,7 @@ function initializeApi(app) {
   if (configuration["task-runner-service"]) {
     app.use("/api", proxy(
       configuration["task-runner-service"], {
-        "proxyReqPathResolver": (request) => {
-          let url = "/api/v1/task" + request.url;
-          url = url.replace("/status.json", "");
-          return url;
-        },
+        "proxyReqPathResolver": (request) => "/api" + request.url
       }));
   } else if (configuration["task-runner-directory"]) {
     const apiDirectory = path.join(
