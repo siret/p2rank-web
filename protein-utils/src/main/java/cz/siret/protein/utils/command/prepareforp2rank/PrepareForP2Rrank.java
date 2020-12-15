@@ -90,8 +90,17 @@ public class PrepareForP2Rrank extends Command {
         configuration.outputDirectory = new File(
                 commandLine.getOptionValue("output"));
         if (commandLine.hasOption("chains")) {
-            configuration.chains = Arrays.asList(
-                    commandLine.getOptionValue("chains").split(","));
+            configuration.chains = new ArrayList<>();
+            String chains = commandLine.getOptionValue("chains");
+            for (String chain : chains.split(",")) {
+                if (chain.isEmpty() || chain.isBlank()) {
+                    continue;
+                }
+                configuration.chains.add(chain);
+            }
+            if (configuration.chains.isEmpty()) {
+                configuration.chains = null;
+            }
         } else {
             configuration.chains = null;
         }
