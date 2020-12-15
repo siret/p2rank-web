@@ -154,7 +154,7 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
             result[required_chain_name] = chain_info["id"]
     if not set(chains).issubset(chains_found):
         raise Exception(
-            f"Requested chains {chains} but only"
+            f"Requested chains {chains} but only "
             f"{list(chains_found)} are available.")
     return result
 
