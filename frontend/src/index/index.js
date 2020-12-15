@@ -46,7 +46,7 @@ function getPdb() {
   if (value === "") {
     return "2src";
   }
-  return value;
+  return value.toLowerCase().trim();
 }
 
 function isValidPdbId(pdbId) {
@@ -222,7 +222,7 @@ $(document).ready(function () {
 });
 
 function updateChainSelector() {
-  const pdbId = $("#pdbId").val().toLowerCase();
+  const pdbId = getPdb();
   const chainSelector = $("#chain-selector");
   if (!isValidPdbId(pdbId)) {
     chainSelector.hide();
