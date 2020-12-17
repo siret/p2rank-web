@@ -47,15 +47,12 @@ def _read_arguments() -> typing.Dict[str, str]:
 
 def main(arguments):
     initialize(arguments)
-
     configuration = load_json(arguments["configuration"])
     structure = prepare_structure(arguments, configuration)
     conservation_files = prepare_conservation(
         configuration, arguments, structure)
-
     p2rank_output = execute_p2rank(
         arguments, structure.file, configuration, conservation_files)
-
     prepare_download_data(
         arguments, p2rank_output, structure, conservation_files)
     prepare_p2rank_web_data(
@@ -64,7 +61,6 @@ def main(arguments):
 
 def initialize(arguments) -> None:
     init_logging()
-    conservation.execute_command = execute_command
     prepare_directories(arguments)
 
 
@@ -225,7 +221,10 @@ def prepare_conservation_from_msa(
     chain = next(iter(chains))
     msa_file = os.path.join(input_dir, options["msaFile"])
     target_file = os.path.join(working_root_dir, f"structure_{chain}.score")
-    conservation.compute_jensen_shannon_divergence(msa_file, target_file)
+    configuration = conservation.ConservationConfiguration()
+    configuration.execute_command = execute_command
+    conservation.compute_jensen_shannon_divergence(
+        msa_file, target_file, configuration)
     return {chain: ConservationTuple(target_file, msa_file)}
 
 
@@ -235,7 +234,8 @@ def compute_from_structure_for_chain(
     fasta_file = os.path.join(arguments["working"], fasta_file_name)
     os.makedirs(working_dir, exist_ok=True)
     target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
-    configuration = conservation.MsaConfiguration()
+    configuration = conservation.ConservationConfiguration()
+    configuration.execute_command = execute_command
     msa_file = conservation.compute_conservation(
         fasta_file, working_dir, target_file, configuration)
     return ConservationTuple(target_file, msa_file)
