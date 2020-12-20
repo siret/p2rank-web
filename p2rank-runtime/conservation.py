@@ -36,11 +36,11 @@ MUSCLE_CMD = os.environ["MUSCLE_CMD"]
 
 class ConservationConfiguration:
     # See multiple_sequence_alignment.MsaConfiguration for more details.
-    msa_minimum_sequence_count: int = 50
+    msa_minimum_sequence_count: int = 30
     # See multiple_sequence_alignment.MsaConfiguration for more details.
-    msa_minimum_coverage: int = 80
+    msa_minimum_coverage: int = 70
     # See multiple_sequence_alignment.MsaConfiguration for more details.
-    msa_maximum_sequences: int = 60
+    msa_maximum_sequences: int = 70
     # Execute command.
     execute_command: typing.Callable[[str], None]
 
@@ -50,12 +50,12 @@ def compute_conservation(
         config: ConservationConfiguration) -> str:
     """Compute conversation to given file, return path to utilized MSA file."""
     msa_file = os.path.join(working_dir, "msa")
-    _compute_msa(input_file, working_dir, msa_file, config)
+    compute_msa(input_file, working_dir, msa_file, config)
     compute_jensen_shannon_divergence(msa_file, output_file, config)
     return msa_file
 
 
-def _compute_msa(
+def compute_msa(
         fasta_file: str, working_dir: str, output_file: str,
         config: ConservationConfiguration):
     """Compute MSA for given fasta file and save output to given file.
@@ -66,7 +66,7 @@ def _compute_msa(
     msa_config.minimum_sequence_count = config.msa_minimum_sequence_count
     msa_config.minimum_coverage = config.msa_minimum_coverage
     msa_config.maximum_sequences_for_msa = config.msa_maximum_sequences
-    msa_config.blast_databases.append(msa.BlastDatabase("swissprot"))
+    msa_config.blast_databases.append(msa.BlastDatabase("uniprot_sprot"))
     msa_config.blast_databases.append(msa.BlastDatabase("uniref50"))
     msa_config.blast_databases.append(msa.BlastDatabase("uniref90"))
     msa_config.working_dir = working_dir
@@ -138,7 +138,7 @@ def compute_jensen_shannon_divergence(
         config: ConservationConfiguration) -> str:
     """Input sequence must be on the first position."""
     sanitized_input_file = input_file + ".sanitized"
-    sanitize_jensen_shannon_divergence_input(
+    _sanitize_jensen_shannon_divergence_input(
         input_file, sanitized_input_file)
     cmd = "cd {} && python2 score_conservation.py {} > {}".format(
         JENSE_SHANNON_DIVERGANCE_DIR,
@@ -150,7 +150,7 @@ def compute_jensen_shannon_divergence(
     return output_file
 
 
-def sanitize_jensen_shannon_divergence_input(input_file: str, output_file: str):
+def _sanitize_jensen_shannon_divergence_input(input_file: str, output_file: str):
     """Chain names such as '>pdb|2SRC|Chain A' lead to
 
     File "score_conservation.py", line 599, in load_sequence_weights
