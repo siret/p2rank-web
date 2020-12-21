@@ -220,7 +220,7 @@ def _select_sequences(input_file: str, output_file: str, count: int):
     if 0 < count < len(sequences):
         filtered_sequence = [
             sequences[index] 
-            for index in float_range(0, len(sequences), count)]
+            for index in uniform_sample(0, len(sequences), count)]
         logging.info("Using %s from %s sequences", 
             len(filtered_sequence), len(sequences))
         sequences = filtered_sequence
