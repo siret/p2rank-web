@@ -156,6 +156,8 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
 
 
 def execute_command(command: str):
+    print(command)
+    return
     result = subprocess.run(command, shell=True, env=os.environ.copy())
     # Throw for non-zero (failure) return code.
     result.check_returncode()
@@ -176,11 +178,7 @@ def prepare_conservation(
             structure.chains, conservation_options,
             arguments["input"], arguments["working"])
     else:
-        return {
-            chain: compute_from_structure_for_chain(
-                chain, fasta_file, arguments)
-            for chain, fasta_file in structure.fasta_files.items()
-        }
+        return compute_conservations(arguments, structure)
 
 
 def should_use_conservation(configuration) -> bool:
@@ -227,6 +225,49 @@ def prepare_conservation_from_msa(
         msa_file, target_file, configuration)
     return {chain: ConservationTuple(target_file, msa_file)}
 
+
+def compute_conservations(
+        arguments, structure: StructureTuple) \
+        -> typing.Dict[str, ConservationTuple]:
+    # As chains may have same sequences, we collect map sequence to chain.
+    result = {}
+    sequence_to_chain = {}
+    for chain, fasta_file_name in structure.fasta_files.items():
+        fasta_file = os.path.join(arguments["working"], fasta_file_name)
+        sequences = _read_fasta_file(fasta_file)
+        if len(sequences) > 1:
+            raise Exception(
+                "The fasta file must contains only one sequence not {}"
+                    .format(len(sequences)))
+        sequence = sequences[0][1]
+        # If we see the sequence for the first time we compute the conservation.
+        if sequence not in sequence_to_chain:
+            conservation = compute_from_structure_for_chain(
+                chain, fasta_file_name, arguments)
+            sequence_to_chain[sequence] = conservation
+        # We use the computed conservation for given chain.
+        result[chain] = sequence_to_chain[sequence]
+    return result
+
+def _read_fasta_file(input_file: str) -> typing.List[typing.Tuple[str, str]]:
+    header = None
+    result = []
+    sequence = ""
+    with open(input_file) as in_stream:
+        for line in in_stream:
+            line = line.rstrip()
+            if line.startswith(">"):
+                if header is None:
+                    header = line[1:]
+                else:
+                    result.append((header, sequence))
+                    header = line[1:]
+                    sequence = ""
+            else:
+                sequence += line
+    if header is not None:
+        result.append((header, sequence))
+    return result
 
 def compute_from_structure_for_chain(
         chain: str, fasta_file_name: str, arguments) -> ConservationTuple:
