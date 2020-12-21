@@ -66,7 +66,7 @@ def compute_msa(
     msa_config.minimum_sequence_count = config.msa_minimum_sequence_count
     msa_config.minimum_coverage = config.msa_minimum_coverage
     msa_config.maximum_sequences_for_msa = config.msa_maximum_sequences
-    msa_config.blast_databases.append(msa.BlastDatabase("uniprot_sprot"))
+    msa_config.blast_databases.append(msa.BlastDatabase("swissprot"))
     msa_config.blast_databases.append(msa.BlastDatabase("uniref50"))
     msa_config.blast_databases.append(msa.BlastDatabase("uniref90"))
     msa_config.working_dir = working_dir
