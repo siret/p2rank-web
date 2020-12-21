@@ -131,7 +131,7 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
     Check that all required chains are in the structure info file.
     Select chains for conservation - only amino chains.
     """
-    if chains is None:
+    if chains is None or len(chains) == 0:
         # Use all amino we got.
         return {
             chain_info["name"]: chain_info["id"]
