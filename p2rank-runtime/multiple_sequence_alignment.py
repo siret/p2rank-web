@@ -27,7 +27,7 @@
 import os
 import typing
 import logging
-
+import math
 
 class BlastDatabase:
     # Name of a database, e.g. "swissprot", "uniref90".
@@ -155,7 +155,7 @@ def _find_similar_sequences_in_database(
         config: MsaConfiguration, database: BlastDatabase) -> bool:
     logging.info(
         "Searching for similar sequences using psiblast on '%s' database ...",
-        database)
+        database.name)
     psiblast = os.path.join(config.working_dir, "psiblast")
     config.execute_psiblast(input_file, psiblast, database)
     logging.info(
@@ -218,12 +218,26 @@ def _select_sequences(input_file: str, output_file: str, count: int):
     """
     sequences = _read_fasta_file(input_file)
     if 0 < count < len(sequences):
-        logging.info("Using %s from %s sequences", count, len(sequences))
-        sequences = sequences[0:count]
+        filtered_sequence = [
+            sequences[index] 
+            for index in float_range(0, len(sequences), count)]
+        logging.info("Using %s from %s sequences", 
+            len(filtered_sequence), len(sequences))
+        sequences = filtered_sequence
     # Write only selected.
     with open(output_file, "w") as out_stream:
         for (header, sequence) in sequences:
             out_stream.write(_format_fasta_sequence(header, sequence))
+
+
+def uniform_sample(start, end, total_count):
+    step = end / total_count
+    count = 0
+    index = start
+    while index < end and count < total_count:
+        yield int(index)
+        index += step
+        count += 1
 
 
 # endregion
