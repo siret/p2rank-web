@@ -156,8 +156,6 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
 
 
 def execute_command(command: str):
-    print(command)
-    return
     result = subprocess.run(command, shell=True, env=os.environ.copy())
     # Throw for non-zero (failure) return code.
     result.check_returncode()
