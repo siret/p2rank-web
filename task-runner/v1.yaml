@@ -1,5 +1,5 @@
 template:
   version: 1
   id: v1
-  urlPath: id_noconser
+  urlPath: v1
   readOnly: true
