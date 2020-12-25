@@ -20,18 +20,25 @@
 import os
 import typing
 import logging
+import argparse
 
 import multiple_sequence_alignment as msa
+import blast_database
 
-JENSE_SHANNON_DIVERGANCE_DIR = os.environ["JENSE_SHANNON_DIVERGANCE_DIR"]
+JENSE_SHANNON_DIVERGANCE_DIR = \
+    os.environ.get("JENSE_SHANNON_DIVERGANCE_DIR", None)
 
-PSIBLAST_CMD = os.environ["PSIBLAST_CMD"]
+PSIBLAST_CMD = \
+    os.environ.get("PSIBLAST_CMD", None)
 
-BLASTDBCMD_CMD = os.environ["BLASTDBCMD_CMD"]
+BLASTDBCMD_CMD = \
+    os.environ.get("BLASTDBCMD_CMD", None)
 
-CDHIT_CMD = os.environ["CDHIT_CMD"]
+CDHIT_CMD = \
+    os.environ.get("CDHIT_CMD", None)
 
-MUSCLE_CMD = os.environ["MUSCLE_CMD"]
+MUSCLE_CMD = \
+    os.environ.get("MUSCLE_CMD", None)
 
 
 class ConservationConfiguration:
@@ -43,6 +50,47 @@ class ConservationConfiguration:
     msa_maximum_sequences: int = 70
     # Execute command.
     execute_command: typing.Callable[[str], None]
+    # Name of BLAST databases used to compute MSA.
+    blast_databases: typing.List[str] = None
+
+
+def _read_arguments() -> typing.Dict[str, str]:
+    parser = argparse.ArgumentParser(
+        description="Compute conservation scores for given sequences.")
+    parser.add_argument(
+        "--input", required=True,
+        help="Input FASTA file.")
+    parser.add_argument(
+        "--working", required=False,
+        help="Working directory.")
+    parser.add_argument(
+        "--output", required=True,
+        help="Output conservation file.")
+    parser.add_argument(
+        "--database", metavar='D', default=None, type=str, nargs="+",
+        help="BLAST databases used for MSA computation.")
+    return vars(parser.parse_args())
+
+
+def main(arguments):
+    if os.path.exists(arguments["output"]):
+        logging.info("Output file already exists.")
+        return
+    config = ConservationConfiguration()
+    if arguments["database"] is None:
+        config.blast_databases = blast_database.get_available_databases()
+    else:
+        config = [arguments["database"]]
+    compute_conservation(
+        arguments["input"], arguments["working"], arguments["output"],
+        config)
+
+
+def _init_logging() -> None:
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format="%(asctime)s [%(levelname)s] - %(message)s",
+        datefmt="%m/%d/%Y %H:%M:%S")
 
 
 def compute_conservation(
@@ -50,36 +98,30 @@ def compute_conservation(
         config: ConservationConfiguration) -> str:
     """Compute conversation to given file, return path to utilized MSA file."""
     msa_file = os.path.join(working_dir, "msa")
-    compute_msa(input_file, working_dir, msa_file, config)
+    msa_config = create_msa_configuration(working_dir, config)
+    msa.compute_msa(input_file, output_file, msa_config)
     compute_jensen_shannon_divergence(msa_file, output_file, config)
     return msa_file
 
 
-def compute_msa(
-        fasta_file: str, working_dir: str, output_file: str,
-        config: ConservationConfiguration):
-    """Compute MSA for given fasta file and save output to given file.
-
-    Result can be used by compute_jensen_shannon_divergence method.
-    """
-    msa_config = msa.MsaConfiguration()
-    msa_config.minimum_sequence_count = config.msa_minimum_sequence_count
-    msa_config.minimum_coverage = config.msa_minimum_coverage
-    msa_config.maximum_sequences_for_msa = config.msa_maximum_sequences
-    msa_config.blast_databases.append(msa.BlastDatabase("swissprot"))
-    msa_config.blast_databases.append(msa.BlastDatabase("uniref50"))
-    msa_config.blast_databases.append(msa.BlastDatabase("uniref90"))
-    msa_config.working_dir = working_dir
-    msa_config.execute_psiblast = \
+def create_msa_configuration(
+        working_dir: str, config: ConservationConfiguration) \
+        -> msa.MsaConfiguration:
+    result = msa.MsaConfiguration()
+    result.minimum_sequence_count = config.msa_minimum_sequence_count
+    result.minimum_coverage = config.msa_minimum_coverage
+    result.maximum_sequences_for_msa = config.msa_maximum_sequences
+    result.blast_databases = config.blast_databases
+    result.working_dir = working_dir
+    result.execute_psiblast = \
         _create_execute_psiblast(config.execute_command)
-    msa_config.execute_blastdb = \
+    result.execute_blastdb = \
         _create_execute_blastdbcmd(config.execute_command)
-    msa_config.execute_cdhit = \
+    result.execute_cdhit = \
         _create_execute_cdhit(config.execute_command)
-    msa_config.execute_muscle = \
+    result.execute_muscle = \
         _create_execute_muscle(config.execute_command)
-    #
-    msa.compute_msa(fasta_file, output_file, msa_config)
+    return result
 
 
 def _create_execute_psiblast(execute_command):
@@ -150,7 +192,8 @@ def compute_jensen_shannon_divergence(
     return output_file
 
 
-def _sanitize_jensen_shannon_divergence_input(input_file: str, output_file: str):
+def _sanitize_jensen_shannon_divergence_input(input_file: str,
+                                              output_file: str):
     """Chain names such as '>pdb|2SRC|Chain A' lead to
 
     File "score_conservation.py", line 599, in load_sequence_weights
@@ -166,3 +209,7 @@ def _sanitize_jensen_shannon_divergence_input(input_file: str, output_file: str)
             if line.startswith(">"):
                 line = line.replace(" ", "_")
             out_stream.write(line)
+
+
+if __name__ == "__main__":
+    main(_read_arguments())

@@ -32,7 +32,7 @@ test {
     useJUnitPlatform()
 }
 
-application {
+application { 
     mainClassName = 'cz.siret.protein.utils.ApplicationEntry'
 }
 

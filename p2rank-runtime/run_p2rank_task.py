@@ -18,6 +18,7 @@ import collections
 import requests
 
 import conservation
+import blast_database
 
 PROTEIN_UTILS_CMD = os.environ["PROTEIN_UTILS_CMD"]
 
@@ -249,6 +250,7 @@ def compute_conservations(
         result[chain] = sequence_to_chain[sequence]
     return result
 
+
 def _read_fasta_file(input_file: str) -> typing.List[typing.Tuple[str, str]]:
     header = None
     result = []
@@ -269,6 +271,7 @@ def _read_fasta_file(input_file: str) -> typing.List[typing.Tuple[str, str]]:
         result.append((header, sequence))
     return result
 
+
 def compute_from_structure_for_chain(
         chain: str, fasta_file_name: str, arguments) -> ConservationTuple:
     working_dir = os.path.join(arguments["working"], f"conservation-{chain}")
@@ -277,10 +280,15 @@ def compute_from_structure_for_chain(
     target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
     configuration = conservation.ConservationConfiguration()
     configuration.execute_command = execute_command
+    configuration.blast_databases = prepare_blast_databases
     msa_file = conservation.compute_conservation(
         fasta_file, working_dir, target_file, configuration)
     return ConservationTuple(target_file, msa_file)
 
+def prepare_blast_databases() -> typing.List[str]:
+    databases = ["swissprot", "uniref50", "uniref50"]
+    blast_database.prepare_databases(execute_command, databases)
+    return databases
 
 def execute_p2rank(
         arguments, structure_file: str, configuration,
