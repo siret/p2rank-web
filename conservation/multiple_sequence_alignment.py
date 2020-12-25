@@ -27,14 +27,6 @@
 import os
 import typing
 import logging
-import math
-
-class BlastDatabase:
-    # Name of a database, e.g. "swissprot", "uniref90".
-    name: str
-
-    def __init__(self, name: str):
-        self.name = name
 
 
 class MsaConfiguration:
@@ -48,15 +40,15 @@ class MsaConfiguration:
     # Limit how many sequences are used to compute MSA. Use 0 for no limit.
     maximum_sequences_for_msa: int
     # List of databases used to search for multisequence alignment.
-    blast_databases: typing.List[BlastDatabase] = []
+    blast_databases: typing.List[str] = []
     # Path to a working directory.
     working_dir: str
     # Execute psiblast for given files.
     # Arguments: input file, output file, database
-    execute_psiblast: typing.Callable[[str, str, BlastDatabase], None]
+    execute_psiblast: typing.Callable[[str, str, str], None]
     # Execute psiblast for given files.
     # Arguments: input file, output file, database
-    execute_blastdb: typing.Callable[[str, str, BlastDatabase], None]
+    execute_blastdb: typing.Callable[[str, str, str], None]
     # Execute psiblast for given files.
     # Arguments: sequences files, output file, log file
     execute_cdhit: typing.Callable[[str, str, str, ], None]
@@ -152,10 +144,10 @@ def _find_similar_sequences(
 
 def _find_similar_sequences_in_database(
         input_file: str, output_file: str,
-        config: MsaConfiguration, database: BlastDatabase) -> bool:
+        config: MsaConfiguration, database: str) -> bool:
     logging.info(
         "Searching for similar sequences using psiblast on '%s' database ...",
-        database.name)
+        database)
     psiblast = os.path.join(config.working_dir, "psiblast")
     config.execute_psiblast(input_file, psiblast, database)
     logging.info(
