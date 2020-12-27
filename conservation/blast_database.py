@@ -89,8 +89,10 @@ def prepare_database(execute_command: typing.Callable[[str], None], name: str):
     #
     logging.info("Preparing database: %s ...", name)
     url = DATABASE_NAME_TO_URL[name]
+    path = os.path.join(BLASTDB, name)
     command = "curl " + url + " | gunzip | " \
               + BLASTDMAKEDB_CMD \
-              + " -out " + name + " -dbtype prot -parse_seqids"
+              + " -out " + path + " -title " + name + " -dbtype prot -parse_seqids"
     execute_command(command)
     logging.info("Preparing database: %s ... done", name)
+

@@ -99,7 +99,7 @@ def compute_conservation(
     """Compute conversation to given file, return path to utilized MSA file."""
     msa_file = os.path.join(working_dir, "msa")
     msa_config = create_msa_configuration(working_dir, config)
-    msa.compute_msa(input_file, output_file, msa_config)
+    msa.compute_msa(input_file, msa_file, msa_config)
     compute_jensen_shannon_divergence(msa_file, output_file, config)
     return msa_file
 
@@ -130,10 +130,10 @@ def _create_execute_psiblast(execute_command):
     def execute_psiblast(
             input_file: str,
             output_file: str,
-            database: msa.BlastDatabase):
+            database: str):
         output_format = "6 sallseqid qcovs pident"
         cmd = "{} < {} -db {} -outfmt '{}' -evalue 1e-5 > {}".format(
-            PSIBLAST_CMD, input_file, database.name, output_format, output_file)
+            PSIBLAST_CMD, input_file, database, output_format, output_file)
         logging.debug("Executing PSI-BLAST ...")
         execute_command(cmd)
 
@@ -146,9 +146,9 @@ def _create_execute_blastdbcmd(execute_command):
     def execute_blastdbcmd(
             input_file: str,
             sequence_file: str,
-            database: msa.BlastDatabase):
+            database: str):
         cmd = "{} -db {} -entry_batch {} > {}".format(
-            BLASTDBCMD_CMD, database.name, input_file, sequence_file)
+            BLASTDBCMD_CMD, database, input_file, sequence_file)
         logging.debug("Executing BLAST ...")
         execute_command(cmd)
 
