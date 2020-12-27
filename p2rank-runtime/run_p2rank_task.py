@@ -278,13 +278,13 @@ def compute_from_structure_for_chain(
     target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
     configuration = conservation.ConservationConfiguration()
     configuration.execute_command = execute_command
-    configuration.blast_databases = prepare_blast_databases
+    configuration.blast_databases = prepare_blast_databases()
     msa_file = conservation.compute_conservation(
         fasta_file, working_dir, target_file, configuration)
     return ConservationTuple(target_file, msa_file)
 
 def prepare_blast_databases() -> typing.List[str]:
-    databases = ["swissprot", "uniref50", "uniref50"]
+    databases = ["swissprot", "uniref50", "uniref90"]
     blast_database.prepare_databases(execute_command, databases)
     return databases
 
