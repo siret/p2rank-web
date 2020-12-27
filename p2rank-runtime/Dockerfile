@@ -11,7 +11,7 @@ WORKDIR /opt/protein-utils
 COPY ./protein-utils ./
 
 RUN chmod +x ./gradlew && ./gradlew installDist \
-  && chmod a+x ./bin/protein-utils
+  && chmod a+x ./dist/bin/protein-utils
 
 #
 # Build rask-runner.
@@ -26,20 +26,20 @@ WORKDIR /opt/task-runner
 
 RUN git clone https://github.com/skodapetr/task-runner.git .
 RUN chmod +x ./gradlew && ./gradlew installDist \
-    && chmod a+x ./bin/task-runner-cli
+    && chmod a+x ./dist/bin/task-runner-cli
 
 #
 # Prepare conservation.
 #
 
-FROM debian:buster-20200607 as conservation
+FROM debian:buster-20200607 as conservation-build
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install \
- wget curl \
- make g++ zlib1g-dev \
+ wget curl ca-certificates \
+ make g++ zlib1g-dev 
 
-WORKDIR /opt/conservation
+WORKDIR /opt/conservation-software
 
 RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.9.0+-x64-linux.tar.gz \
  && wget https://github.com/weizhongli/cdhit/releases/download/V4.8.1/cd-hit-v4.8.1-2019-0228.tar.gz \
@@ -55,10 +55,13 @@ RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.
  && mv conservation_code jense_shannon_divergence \
  && rm ./*.gz
 
+RUN chmod -R a+r ./jense_shannon_divergence/matrix
+
+WORKDIR /opt/conservation
+
 COPY ./conservation ./
 
-RUN chmod -R a+r /opt/conservation/jense_shannon_divergence/matrix  \
-    chmod a+x conservation.py
+RUN chmod a+x conservation.py
 
 #
 # Main image.
@@ -76,7 +79,8 @@ RUN apt-get update \
  wget curl \
  python2 python-numpy \
  python3 python3-pip \
- openjdk-11-jre-headless
+ openjdk-11-jre-headless \
+ libgomp1
 
 RUN addgroup --gid ${USER} user \
  && useradd --uid ${USER} --gid ${USER} user
@@ -93,13 +97,14 @@ RUN mkdir /opt/conservation && chown user:user /opt/conservation \
 # Prepare task runner.
 
 WORKDIR /opt/task-runner
-COPY --from=task-runner-build  /opt/task-runner/dist ./
+COPY --from=task-runner-build /opt/task-runner/dist ./
 
 #
 # Prepare conservation pipeline.
 
-WORKDIR /opt/conservation
-COPY --from=task-runner-build  /opt/conservation ./
+WORKDIR /opt
+COPY --from=conservation-build /opt/conservation ./conservation
+COPY --from=conservation-build /opt/conservation-software ./conservation-software
 
 #
 # Prepare protein-utils.
@@ -144,16 +149,17 @@ COPY ./task-runner ./templates
 ENV BLASTDB="/data/conservation/blast-database/"
 ENV HSSPTDB="/data/conservation/hssp/"
 
-ENV JENSE_SHANNON_DIVERGANCE_DIR="/opt/conservation/jense_shannon_divergence/"
-ENV PSIBLAST_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/psiblast"
-ENV BLASTDBCMD_CMD="/opt/conservation/ncbi-blast-2.9.0+/bin/blastdbcmd"
-ENV CDHIT_CMD="/opt/conservation/cd-hit-v4.8.1-2019-0228/cd-hit"
-ENV MUSCLE_CMD="/opt/conservation/muscle3.8.31_i86linux64"
+ENV JENSE_SHANNON_DIVERGANCE_DIR="/opt/conservation-software/jense_shannon_divergence/"
+ENV PSIBLAST_CMD="/opt/conservation-software/ncbi-blast-2.9.0+/bin/psiblast"
+ENV BLASTDBCMD_CMD="/opt/conservation-software/ncbi-blast-2.9.0+/bin/blastdbcmd"
+ENV BLASTDMAKEDB_CMD="/opt/conservation-software/ncbi-blast-2.9.0+/bin/makeblastdb"
+ENV CDHIT_CMD="/opt/conservation-software/cd-hit-v4.8.1-2019-0228/cd-hit"
+ENV MUSCLE_CMD="/opt/conservation-software/muscle3.8.31_i86linux64"
 ENV PDB_DIR="/tmp/pdb/"
 ENV PDB_CACHE_DIR="/tmp/pdb-cache/"
 
 # Allow import of packages from conservation file.
-ENV PYTHON_PATH="/opt/conservation"
+ENV PYTHONPATH="/opt/conservation"
 
 ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
 
