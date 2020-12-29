@@ -37,6 +37,7 @@ def _read_arguments() -> typing.Dict[str, str]:
 
 def main(arguments):
     arguments["working"] = os.path.join(arguments["output"], "working")
+    print(arguments)
     #
     p2rank_task.init_logging()
     conservation.execute_command = p2rank_task.execute_command
@@ -54,11 +55,9 @@ def main(arguments):
             "hsspCode": None,
         }
     }
-
     structure = p2rank_task.prepare_structure(arguments, configuration)
     conservation_files = p2rank_task.prepare_conservation(
         configuration, arguments, structure)
-
     p2rank_output = p2rank_task.execute_p2rank(
         arguments, structure.file, configuration, conservation_files)
     p2rank_task.collect_download_data(
