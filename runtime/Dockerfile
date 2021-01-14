@@ -69,10 +69,13 @@ RUN chmod a+x conservation.py
 
 FROM debian:buster-20200607
 
-ARG USER=5988
+# Default user.
+ARG UID=5988
+ARG GID=5988
+# Default p2rank version.
+ARG P2RANK_DOWNLOAD_URL=https://github.com/rdk/p2rank/releases/download/2.2/p2rank_2.2.tar.gz
 
-# Allow user to specify a custom URL for p2rank.
-ARG P2RANK_DOWNLOAD_URL
+#
 
 RUN apt-get update \
  && apt-get -y --no-install-recommends install \
@@ -82,8 +85,8 @@ RUN apt-get update \
  openjdk-11-jre-headless \
  libgomp1
 
-RUN addgroup --gid ${USER} user \
- && useradd --uid ${USER} --gid ${USER} user
+RUN addgroup --gid ${GID} user \
+ && useradd --uid ${UID} --gid ${GID} user
 
 RUN mkdir /opt/conservation && chown user:user /opt/conservation \
  && mkdir /opt/p2rank && chown user:user /opt/p2rank \
@@ -166,7 +169,7 @@ ENV PROTEIN_UTILS_CMD="/opt/protein-utils/bin/protein-utils"
 #
 # Final setup.
 
-USER ${USER}:${USER}
+USER ${UID}:${GID}
 
 # Prepare temporary directories
 RUN mkdir ${PDB_DIR} && mkdir ${PDB_CACHE_DIR}

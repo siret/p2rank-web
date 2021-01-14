@@ -10,7 +10,7 @@ import blast_database
 
 
 def main():
-    databases = blast_database.DATABASE_NAME_TO_URL.values()
+    databases = blast_database.DATABASE_NAME_TO_URL.keys()
     blast_database.prepare_databases(execute_command, databases)
 
 

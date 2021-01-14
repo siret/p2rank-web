@@ -21,6 +21,8 @@ import os
 import typing
 import logging
 import argparse
+import subprocess
+import shutil
 
 import multiple_sequence_alignment as msa
 import blast_database
@@ -61,29 +63,32 @@ def _read_arguments() -> typing.Dict[str, str]:
         "--input", required=True,
         help="Input FASTA file.")
     parser.add_argument(
-        "--working", required=False,
+        "--working", required=True,
         help="Working directory.")
     parser.add_argument(
         "--output", required=True,
         help="Output conservation file.")
     parser.add_argument(
-        "--database", metavar='D', default=None, type=str, nargs="+",
+        "--database", metavar="D",
+        default=["swissprot", "uniref50", "uniref90"],
+        type=str, nargs="+",
         help="BLAST databases used for MSA computation.")
     return vars(parser.parse_args())
 
 
 def main(arguments):
+    _init_logging()
     if os.path.exists(arguments["output"]):
         logging.info("Output file already exists.")
         return
     config = ConservationConfiguration()
-    if arguments["database"] is None:
-        config.blast_databases = blast_database.get_available_databases()
-    else:
-        config = [arguments["database"]]
+    config.blast_databases = arguments["database"]
+    config.execute_command = _default_execute_command
+    os.makedirs(arguments["working"], exist_ok=True)
     compute_conservation(
         arguments["input"], arguments["working"], arguments["output"],
         config)
+    shutil.rmtree(arguments["working"])
 
 
 def _init_logging() -> None:
@@ -91,6 +96,11 @@ def _init_logging() -> None:
         level=logging.DEBUG,
         format="%(asctime)s [%(levelname)s] - %(message)s",
         datefmt="%m/%d/%Y %H:%M:%S")
+
+def _default_execute_command(command: str):
+    result = subprocess.run(command, shell=True, env=os.environ.copy())
+    # Throw for non-zero (failure) return code.
+    result.check_returncode()
 
 
 def compute_conservation(
