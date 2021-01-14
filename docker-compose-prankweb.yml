@@ -1,0 +1,45 @@
+version: "3.8"
+services:
+  prankweb-gateway:
+    build:
+      context: ./
+      dockerfile: ./api-gateway/Dockerfile
+      args:
+        GOOGLE_ANALYTIS: "UA-136777636-1"
+      labels:
+        com.github.cusbg.project: "prankweb"
+    restart: unless-stopped
+    networks:
+      - prankweb
+    ports:
+      - "8020:80"
+  prankweb-runtime:
+    build:
+      context: ./
+      dockerfile: ./runtime/Dockerfile
+      args:
+        USER: "1002"
+        P2RANK_DOWNLOAD_URL: "https://github.com/rdk/p2rank/releases/download/2.2/p2rank_2.2.tar.gz"
+      labels:
+        com.github.cusbg.project: "prankweb"
+    restart: unless-stopped
+    networks:
+      - prankweb
+    user: "1002"
+    volumes:
+      - /data/conservation/blast-database:/data/conservation/blast-database
+      - /data/conservation/hssp:/data/conservation/hssp
+      - /data/prankweb:/data/p2rank/task
+  prankweb-monitor:
+    build:
+      context: ./
+      dockerfile: ./monitor/Dockerfile
+      args:
+        GOOGLE_ANALYTICS: "UA-136777636-2"
+      labels:
+        com.github.cusbg.project: "prankweb"
+    restart: unless-stopped
+    networks:
+      - prankweb
+networks:
+  prankweb:

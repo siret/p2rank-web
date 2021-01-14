@@ -88,10 +88,10 @@ RUN addgroup --gid ${USER} user \
 RUN mkdir /opt/conservation && chown user:user /opt/conservation \
  && mkdir /opt/p2rank && chown user:user /opt/p2rank \
  && mkdir /opt/protein-utils && chown user:user /opt/protein-utils \
- && mkdir /opt/p2rank-runtime && chown user:user /opt/p2rank-runtime \
+ && mkdir /opt/prankweb-runtime && chown user:user /opt/prankweb-runtime \
  && mkdir /opt/task-runner && chown user:user /opt/task-runner \
  && mkdir /data && chown user:user /data \
- && mkdir /data/p2rank && chown user:user /data/p2rank
+ && mkdir /data/prankweb && chown user:user /data/prankweb
 
 #
 # Prepare task runner.
@@ -132,15 +132,15 @@ RUN chmod a+x ./default/p2rank.sh
 #
 # Prepare p2rank runtime.
 
-WORKDIR /opt/p2rank-runtime
-COPY ./p2rank-runtime ./
+WORKDIR /opt/prankweb-runtime
+COPY ./runtime ./
 RUN pip3 install requests==2.24.0
 RUN chmod a+x ./run_p2rank.py
 
 #
 # Prepare task runner definitions.
 
-WORKDIR /data/p2rank/
+WORKDIR /data/prankweb/
 COPY ./task-runner ./templates
 
 #
@@ -175,13 +175,13 @@ RUN mkdir ${PDB_DIR} && mkdir ${PDB_CACHE_DIR}
 EXPOSE 8020
 
 # Working directory.
-WORKDIR /opt/p2rank-runtime
+WORKDIR /opt/prankweb-runtime
 
 CMD [ \
     "/opt/task-runner/bin/task-runner-cli", \
-    "--TemplatesDirectory=/data/p2rank/templates", \
-    "--TaskDirectory=/data/p2rank/task/database", \
-    "--WorkingDirectory=/data/p2rank/task/working", \
+    "--TemplatesDirectory=/data/prankweb/templates", \
+    "--TaskDirectory=/data/prankweb/task/database", \
+    "--WorkingDirectory=/data/prankweb/task/working", \
     "--WorkerCount=2", \
     "--HttpPort=8020" \
 ]

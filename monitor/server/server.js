@@ -9,7 +9,7 @@ const request = require("request");
 })();
 
 function initializeApi(app) {
-  const ga = process.env.P2RANK_WEB_MONITOR_GOOGLE_ANALYTICS;
+  const ga = process.env.GOOGLE_ANALYTIS;
   if (ga === undefined) {
     logger.info("No Google Analytics account provided.")
   } else {

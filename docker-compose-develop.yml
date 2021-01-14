@@ -1,34 +1,32 @@
 version: "3.8"
 services:
-  p2rank-api-gateway:
+  prankweb-gateway:
     build:
       context: ./
       dockerfile: ./api-gateway/Dockerfile
       labels:
-        com.github.cusbg.project : "p2rank"
+        com.github.cusbg.project: "prankweb"
     restart: unless-stopped
     networks:
-      - p2rank-online
+      - prankweb
     ports:
       - "8080:80"
-  p2rank-web-runtime:
+  prankweb-runtime:
     build:
       context: ./
-      dockerfile: ./p2rank-runtime/Dockerfile
+      dockerfile: ./runtime/Dockerfile
       args:
         USER: ${USER}
         P2RANK_DOWNLOAD_URL: "https://github.com/rdk/p2rank/releases/download/2.2/p2rank_2.2.tar.gz"
       labels:
-        com.github.cusbg.project : "p2rank"
+        com.github.cusbg.project: "prankweb"
+    user: ${USER}
     restart: unless-stopped
     networks:
-      - p2rank-online
+      - prankweb
     volumes:
-      -  conservation-volume:/data/conservation
-      -  database-volume:/data/p2rank/task
-    user: ${USER}
+      - /data/conservation/blast-database:/data/conservation/blast-database
+      - /data/conservation/hssp:/data/conservation/hssp
+      - /data/prankweb:/data/p2rank/task
 networks:
-  p2rank-online:
-volumes:
-  conservation-volume:
-  database-volume:
+  prankweb:
