@@ -16,18 +16,20 @@ services:
       context: ./
       dockerfile: ./runtime/Dockerfile
       args:
-        UID: ${UID}
-        GID: ${GID}
+        UID: 5988
+        GID: 5988
         P2RANK_DOWNLOAD_URL: "https://github.com/rdk/p2rank/releases/download/2.2/p2rank_2.2.tar.gz"
       labels:
         com.github.cusbg.project: "prankweb"
-    user: ${UID}:${GID}
+    user: 5988:5988
     restart: unless-stopped
     networks:
       - prankweb
     volumes:
-      - /data/conservation/2020_06:/data/conservation/blast-database
-      - /data/conservation/hssp:/data/conservation/hssp
-      - /data/prankweb:/data/prankweb/task
+      - conservation-volume:/data/conservation/
+      - data-volume:/data/prankweb/task
 networks:
   prankweb:
+volumes:
+  conservation-volume:
+  data-volume:

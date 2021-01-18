@@ -10,13 +10,13 @@ template:
   steps:
     - name: 'prepare configuration'
       command: >-
-        python3 /opt/p2rank-runtime/create_task_configuration.py
+        python3 /opt/prankweb-runtime/create_task_configuration.py
         --task ${_.id}
         --output "${_.working}/configuration.json"
         --conservation
     - name: 'p2rank'
       command: >-
-        python3 /opt/p2rank-runtime/run_p2rank_task.py
+        python3 /opt/prankweb-runtime/run_p2rank_task.py
         --p2rank /opt/p2rank/default
         --input "${_.input}"
         --working "${_.working}"

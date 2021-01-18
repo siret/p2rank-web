@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  prankweb-gateway:
+  gateway:
     build:
       context: ./
       dockerfile: ./api-gateway/Dockerfile
@@ -13,7 +13,7 @@ services:
       - prankweb
     ports:
       - "8020:80"
-  prankweb-runtime:
+  runtime:
     build:
       context: ./
       dockerfile: ./runtime/Dockerfile
@@ -29,8 +29,8 @@ services:
     volumes:
       - /data/conservation/blast-database:/data/conservation/blast-database
       - /data/conservation/hssp:/data/conservation/hssp
-      - /data/prankweb:/data/p2rank/task
-  prankweb-monitor:
+      - /data/prankweb:/data/prankweb/task
+  monitor:
     build:
       context: ./
       dockerfile: ./monitor/Dockerfile
