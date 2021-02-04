@@ -95,7 +95,8 @@ def prepare_structure(arguments, configuration) -> StructureTuple:
     structure_info = load_json(
         os.path.join(arguments["working"], "structure-info.json"))
     structure_file = os.path.join(arguments["working"], "structure.pdb")
-    chains_to_use = filter_amino_chains(structure_info, chains)
+    chains_to_use = sanitize_chains(
+        filter_amino_chains(structure_info, chains))
     fasta_files = {
         key: f"chain_{value}.fasta"
         for key, value in chains_to_use.items()
@@ -155,6 +156,22 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
             f"{list(chains_found)} are available.")
     return result
 
+def sanitize_chains(chains: typing.Dict[str, str]) -> typing.Dict[str, str]:
+    result = {}
+    for key, value in chains.items():
+        # PDB file may not specify chain name, in such a case
+        # P2Rank use 'A' as a chain name. The chain name is used
+        # to name conservation file, so we need to do this change.
+        # In our script we use chain name for HSSP and MSA file, in such
+        # cases it is also desired behaviour, as we need name of the chain
+        # not an empty string. It might be an issue if there is an empty
+        # named chain in HSSP however.
+        if key == " ":
+            key = "A"
+        if key in result:
+            raise Exception("Multiple chains of same name found!")
+        result[key] = value
+    return result
 
 def execute_command(command: str):
     result = subprocess.run(command, shell=True, env=os.environ.copy())
