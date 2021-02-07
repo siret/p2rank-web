@@ -4,7 +4,6 @@ template:
   urlPath: v2-conservation
   createOnGet: true
   mergeErrOutToStdOut: true
-  newLocationHttpTemplate: ./analyze?database=v2-conservation&code={task}
   taskGetIdentificationTransformation: UpperCase
   allowGzipPublicFiles: true
   steps:
