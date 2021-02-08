@@ -41,19 +41,25 @@ RUN apt-get update \
 
 WORKDIR /opt/conservation-software
 
-RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.9.0+-x64-linux.tar.gz \
- && wget https://github.com/weizhongli/cdhit/releases/download/V4.8.1/cd-hit-v4.8.1-2019-0228.tar.gz \
- && wget http://www.drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux64.tar.gz \
- && wget http://compbio.cs.princeton.edu/conservation/conservation_code.tar.gz \
+RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/2.9.0/ncbi-blast-2.9.0+-x64-linux.tar.gz -q \
  && tar -xzf ncbi-blast-2.9.0+-x64-linux.tar.gz \
+ && rm ./ncbi-blast-2.9.0+-x64-linux.tar.gz
+
+RUN wget https://github.com/weizhongli/cdhit/releases/download/V4.8.1/cd-hit-v4.8.1-2019-0228.tar.gz -q \
  && tar -xzf cd-hit-v4.8.1-2019-0228.tar.gz \
  && cd cd-hit-v4.8.1-2019-0228 \
  && make \
  && cd .. \
+ && rm ./cd-hit-v4.8.1-2019-0228.tar.gz
+
+RUN wget http://www.drive5.com/muscle/downloads3.8.31/muscle3.8.31_i86linux64.tar.gz -q \
  && tar -xzf muscle3.8.31_i86linux64.tar.gz \
+ && rm ./muscle3.8.31_i86linux64.tar.gz
+
+RUN wget http://compbio.cs.princeton.edu/conservation/conservation_code.tar.gz -q \
  && tar -xzf conservation_code.tar.gz \
  && mv conservation_code jense_shannon_divergence \
- && rm ./*.gz
+ && rm ./conservation_code.tar.gz
 
 RUN chmod -R a+r ./jense_shannon_divergence/matrix
 
@@ -120,7 +126,7 @@ COPY --from=protein-utils-build /opt/protein-utils/dist ./
 
 WORKDIR /opt/p2rank
 
-RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL  \
+RUN wget -O p2rank.tar.gz $P2RANK_DOWNLOAD_URL -q \
  && tar -xf p2rank.tar.gz \
  && rm p2rank.tar.gz \
  # p2rank archive contains version, we need to get rid of that
