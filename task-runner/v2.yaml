@@ -4,7 +4,6 @@ template:
   urlPath: v2
   createOnGet: true
   mergeErrOutToStdOut: true
-  newLocationHttpTemplate: ./analyze?database=v2&code={task}
   taskGetIdentificationTransformation: UpperCase
   steps:
     - name: 'prepare configuration'
