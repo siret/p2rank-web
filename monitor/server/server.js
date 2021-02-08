@@ -9,7 +9,7 @@ const request = require("request");
 })();
 
 function initializeApi(app) {
-  const ga = process.env.GOOGLE_ANALYTIS;
+  const ga = process.env.GOOGLE_ANALYTICS;
   if (ga === undefined) {
     logger.info("No Google Analytics account provided.")
   } else {
