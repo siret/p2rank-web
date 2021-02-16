@@ -5,6 +5,7 @@ template:
   createOnGet: true
   mergeErrOutToStdOut: true
   taskGetIdentificationTransformation: UpperCase
+  allowGzipPublicFiles: true
   steps:
     - name: 'prepare configuration'
       command: >-

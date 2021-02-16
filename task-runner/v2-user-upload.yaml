@@ -4,6 +4,7 @@ template:
   urlPath: v2-user-upload
   allowInputFiles: true
   mergeErrOutToStdOut: true
+  allowGzipPublicFiles: true
   steps:
     - name: 'prepare configuration'
       command: >-

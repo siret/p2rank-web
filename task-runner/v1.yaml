@@ -3,3 +3,4 @@ template:
   id: v1
   urlPath: v1
   readOnly: true
+  allowGzipPublicFiles: true
