@@ -1,12 +1,12 @@
 FROM node:12
 
-ARG GOOGLE_ANALYTIS=""
+ARG GOOGLE_ANALYTICS=""
 
 WORKDIR /opt/p2rank-monitor
 
 COPY ./monitor/package*.json ./
 
-ENV GOOGLE_ANALYTIS=$GOOGLE_ANALYTIS
+ENV GOOGLE_ANALYTICS=$GOOGLE_ANALYTICS
 
 RUN npm ci --only=production
 
