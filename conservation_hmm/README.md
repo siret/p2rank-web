@@ -28,7 +28,7 @@ where `FASTA_file`, `database_file`, `working_directory`, and `target_file` are 
 
 ### Output
 
-When the script terminates, the `target_file` will contain a list of tab-separated triples \(index, amino\_acid\_residue, IC\) for the amino acid residues in the `FASTA_file`, where index is simply a numbering starting from zero \(0\) for the first residue. One triple is provided per line.
+When the script terminates, the `target_file` will contain a list of tab-separated triples \(index, IC, amino\_acid\_residue\) for the amino acid residues in the `FASTA_file`, where index is simply a number starting from zero \(0\) for the first residue. One triple is provided per line.
 
 In addition, a `target_file.freqgap` file will be produced, utilizing the same formatting as `target_file`, but containing the frequencies of the gap \(-\) character in the respective MSA columns instead of the per-position IC values.
 

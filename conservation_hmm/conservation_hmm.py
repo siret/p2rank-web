@@ -65,7 +65,7 @@ def read_information_content(FASTA_file, working_directory):
 def write_feature(target_file, FASTA_file_sequence, feature):
     with open(target_file, mode="w") as f:
         for (i, j), k in zip(enumerate(FASTA_file_sequence), feature):
-            f.write("\t".join((str(i), j, k)) + "\n")
+            f.write("\t".join((str(i), k, j)) + "\n")
 
 
 def conservation_hmm(FASTA_file, database_file, working_directory, target_file):
