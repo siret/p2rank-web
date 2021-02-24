@@ -26,6 +26,8 @@ where `FASTA_file`, `database_file`, `working_directory`, and `target_file` are 
  - `working_directory` is a directory in which the MSAs and other temporary files are stored. **It must end with your OS's path delimiting character** \[*i.e.*, a slash \("/"\) on UNIX systems\] **in the script's arguments.** The temporary files in `working_directory` are **not** cleaned up after the script terminates.
  - `target_file` is the primary output file containing the per-position IC values. For its format and additional information, please see the section below.
 
+The script `examples/run_examples.sh` presents an example use case. It can be used to calculate the per-position IC values for the `*.fasta` files present in the `examples/` directory, provided that the sequence database `examples/database/uniprot_sprot.fasta` and the directory `examples/working/` exist. **The contents of the `examples/` directory are not required for running the `conservation_hmm.py` script and serve only as a convenient way of showcasing and testing its usage.**
+
 ### Output
 
 When the script terminates, the `target_file` will contain a list of tab-separated triples \(index, IC, amino\_acid\_residue\) for the amino acid residues in the `FASTA_file`, where index is simply a number starting from zero \(0\) for the first residue. One triple is provided per line.
