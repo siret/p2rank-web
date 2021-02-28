@@ -19,6 +19,7 @@ import requests
 
 import conservation
 import blast_database
+import conservation_hmm
 
 PROTEIN_UTILS_CMD = os.environ["PROTEIN_UTILS_CMD"]
 
@@ -156,6 +157,7 @@ def filter_amino_chains(structure_info, chains) -> typing.Dict[str, str]:
             f"{list(chains_found)} are available.")
     return result
 
+
 def sanitize_chains(chains: typing.Dict[str, str]) -> typing.Dict[str, str]:
     result = {}
     for key, value in chains.items():
@@ -172,6 +174,7 @@ def sanitize_chains(chains: typing.Dict[str, str]) -> typing.Dict[str, str]:
             raise Exception("Multiple chains of same name found!")
         result[key] = value
     return result
+
 
 def execute_command(command: str):
     result = subprocess.run(command, shell=True, env=os.environ.copy())
@@ -194,7 +197,8 @@ def prepare_conservation(
             structure.chains, conservation_options,
             arguments["input"], arguments["working"])
     else:
-        return compute_conservations(arguments, structure)
+        return compute_conservations(
+            arguments, structure, conservation_options.get("type", None))
 
 
 def should_use_conservation(configuration) -> bool:
@@ -243,7 +247,7 @@ def prepare_conservation_from_msa(
 
 
 def compute_conservations(
-        arguments, structure: StructureTuple) \
+        arguments, structure: StructureTuple, conservation_type) \
         -> typing.Dict[str, ConservationTuple]:
     # As chains may have same sequences, we collect map sequence to chain.
     result = {}
@@ -259,7 +263,7 @@ def compute_conservations(
         # If we see the sequence for the first time we compute the conservation.
         if sequence not in sequence_to_chain:
             conservation = compute_from_structure_for_chain(
-                chain, fasta_file_name, arguments)
+                chain, fasta_file_name, arguments, conservation_type)
             sequence_to_chain[sequence] = conservation
         # We use the computed conservation for given chain.
         result[chain] = sequence_to_chain[sequence]
@@ -288,31 +292,48 @@ def _read_fasta_file(input_file: str) -> typing.List[typing.Tuple[str, str]]:
 
 
 def compute_from_structure_for_chain(
-        chain: str, fasta_file_name: str, arguments) -> ConservationTuple:
+        chain: str, fasta_file_name: str, arguments, conservation_type
+) -> ConservationTuple:
     working_dir = os.path.join(arguments["working"], f"conservation-{chain}")
     fasta_file = os.path.join(arguments["working"], fasta_file_name)
     os.makedirs(working_dir, exist_ok=True)
     target_file = os.path.join(working_dir, f"chain_{chain}_conservation.score")
+    if conservation_type == "hmm":
+        return compute_chain_conservation_with_hmm(
+            fasta_file, working_dir, target_file)
+    else:
+        return compute_chain_conservation(
+            fasta_file, working_dir, target_file)
+
+
+def compute_chain_conservation_with_hmm(
+        fasta_file: str, working_dir: str, target_file: str
+) -> ConservationTuple:
+    blast_database_path = os.environ.get("BLASTDB", None)
+    # TODO Use different databases as "swissprot", "uniref50", "uniref90"
+    database_file = os.path.join(blast_database_path, "uniprot_sprot.fasta")
+    conservation_hmm.compute_conservation(
+        fasta_file, database_file, working_dir, target_file, execute_command)
+    # TODO Add MSA file.
+    return ConservationTuple(target_file, None)
+
+
+def compute_chain_conservation(
+        fasta_file: str, working_dir: str, target_file: str
+) -> ConservationTuple:
     configuration = conservation.ConservationConfiguration()
     configuration.execute_command = execute_command
     configuration.blast_databases = prepare_blast_databases()
-    # The following lines show how `conservation_hmm` can be integrated.
-    USE_CONSERVATION_HMM = False        # Can be an environmental variable or configuration attribute.
-    if USE_CONSERVATION_HMM:
-        from conservation_hmm import conservation_hmm       # Can be moved to import section. `conservation_hmm.py` must be in Python search path.
-        database_file = os.path.join(blast_database.BLASTDB, "uniprot_sprot.fasta")     # `conservation_hmm` database can be specified as an environmental variable or configuration attribute.
-        working_dir = os.path.join(working_dir, "")     # `working_dir` must end with a '/' or other OS' equivalent
-        conservation_hmm(fasta_file, database_file, working_dir, target_file)
-        return ConservationTuple(target_file, None)     # `msa_file` can be added, but is in STOCKHOLM format.
-    # End of the `conservation_hmm` integration example.
     msa_file = conservation.compute_conservation(
         fasta_file, working_dir, target_file, configuration)
     return ConservationTuple(target_file, msa_file)
+
 
 def prepare_blast_databases() -> typing.List[str]:
     databases = ["swissprot", "uniref50", "uniref90"]
     blast_database.prepare_databases(execute_command, databases)
     return databases
+
 
 def execute_p2rank(
         arguments, structure_file: str, configuration,
