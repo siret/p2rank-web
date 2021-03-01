@@ -28,20 +28,22 @@ export const TREE_REF_CARTOON: string = 'polymer-visual-cartoon';
 
 export function residuesBySeqNums(...seqNums: string[]) {
   return LiteMol.Core.Structure.Query.residues(...seqNums.map(seqNum => {
+    let parsedObject = seqNum.trim().match(/^([A-Z]*)_?([0-9]+)([A-Z])*$/);
+    if (parsedObject == null) {
+      console.warn(
+        "Cannot parse residue from seq. number:",
+        JSON.stringify(seqNum), parsedObject);
+      return {};
+    }
     let result: LiteMol.Core.Structure.Query.ResidueIdSchema = {};
-    let parsedObject = seqNum.match(/^([A-Z]*)_?([0-9]+)([A-Z])*$/);
-    if (parsedObject != null) {
-      if (parsedObject[1]) { // Chain found
-        result.authAsymId = parsedObject[1]
-      }
-      if (parsedObject[2]) { // ResId found
-        result.authSeqNumber = parseInt(parsedObject[2])
-      }
-      if (parsedObject[3]) { // InsCode found
-        result.insCode = parsedObject[3]
-      }
-    } else {
-      console.log("Error: Cannot parse residue id.")
+    if (parsedObject[1]) { // Chain found
+      result.authAsymId = parsedObject[1]
+    }
+    if (parsedObject[2]) { // ResId found
+      result.authSeqNumber = parseInt(parsedObject[2])
+    }
+    if (parsedObject[3]) { // InsCode found
+      result.insCode = parsedObject[3]
     }
     return result;
   }));
