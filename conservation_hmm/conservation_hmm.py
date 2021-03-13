@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from argparse import ArgumentParser
+from os import path
 from subprocess import DEVNULL, run
 
 
@@ -71,6 +72,7 @@ def _write_feature(target_file, fasta_file_sequence, feature):
 def conservation_hmm(
     fasta_file, database_file, working_directory, target_file, msa=False
 ):
+    working_directory = path.join(working_directory, "")
     _generate_msa(fasta_file, database_file, working_directory)
     _calculate_sequence_weights(fasta_file, working_directory)
     _calculate_information_content(fasta_file, working_directory)
