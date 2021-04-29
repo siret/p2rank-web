@@ -35,7 +35,12 @@ def _select_sequences(unweighted_msa_file, max_seqs):
 
 def _generate_msa_sample(unweighted_msa_file, ss_file):
     unweighted_msa_sample_file = unweighted_msa_file + ".sample"
-    subprocess.run("esl-alimanip -o {} --seq-k {} {}".format(unweighted_msa_sample_file, ss_file, unweighted_msa_file).split(), stdout=subprocess.DEVNULL)
+    subprocess.run(
+        "esl-alimanip -o {} --seq-k {} {}".format(
+            unweighted_msa_sample_file, ss_file, unweighted_msa_file
+        ).split(),
+        stdout=subprocess.DEVNULL,
+    )
     return unweighted_msa_sample_file
 
 
@@ -98,18 +103,31 @@ def _write_feature(target_file, fasta_file_sequence, feature):
 
 
 def run_conservation_hmm(
-    fasta_file, database_file, working_directory, target_file, msa=False, max_seqs=None
+    fasta_file,
+    database_file,
+    working_directory,
+    target_file,
+    msa=False,
+    max_seqs=None,
 ):
-    working_directory = path.join(working_directory, "")    # Ensures that `working_directory` ends with a path delimiter
+    working_directory = path.join(
+        working_directory, ""
+    )  # Ensures that `working_directory` ends with a path delimiter
     if msa:
         print("Option `--msa` is not yet implemented.")
-    unweighted_msa_file = _generate_msa(fasta_file, database_file, working_directory)
+    unweighted_msa_file = _generate_msa(
+        fasta_file, database_file, working_directory
+    )
     if max_seqs:
         ss_file = _select_sequences(unweighted_msa_file, max_seqs)
         if ss_file:
-            unweighted_msa_sample_file = _generate_msa_sample(unweighted_msa_file, ss_file)
-            weighted_msa_file = _calculate_sequence_weights(unweighted_msa_sample_file)
-        else:   # `ss_file` is `None` if MSA contains fewer than `max_seqs` sequences
+            unweighted_msa_sample_file = _generate_msa_sample(
+                unweighted_msa_file, ss_file
+            )
+            weighted_msa_file = _calculate_sequence_weights(
+                unweighted_msa_sample_file
+            )
+        else:  # `ss_file` is `None` if MSA contains fewer than `max_seqs` sequences
             weighted_msa_file = _calculate_sequence_weights(unweighted_msa_file)
     else:
         weighted_msa_file = _calculate_sequence_weights(unweighted_msa_file)
@@ -122,7 +140,7 @@ def run_conservation_hmm(
         )
         _write_feature(target_file, fasta_file_sequence, information_content)
         _write_feature(target_file + ".freqgap", fasta_file_sequence, freqgap)
-    else:   # `information_content` is `None` if no MSA was generated
+    else:  # `information_content` is `None` if no MSA was generated
         _write_feature(
             target_file,
             fasta_file_sequence,
