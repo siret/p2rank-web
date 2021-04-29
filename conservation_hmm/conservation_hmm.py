@@ -2,13 +2,13 @@
 
 from argparse import ArgumentParser
 from os import path
-from subprocess import DEVNULL, run
+import subprocess
 import random
 
 
 def _generate_msa(fasta_file, database_file, working_directory):
     unweighted_msa_file = "{}{}.sto".format(working_directory, fasta_file)
-    run(
+    subprocess.run(
         "phmmer -o /dev/null -A {} {} {}".format(
             unweighted_msa_file, fasta_file, database_file
         ).split()
@@ -35,30 +35,30 @@ def _select_sequences(unweighted_msa_file, max_seqs):
 
 def _generate_msa_sample(unweighted_msa_file, ss_file):
     unweighted_msa_sample_file = unweighted_msa_file + ".sample"
-    run("esl-alimanip -o {} --seq-k {} {}".format(unweighted_msa_sample_file, ss_file, unweighted_msa_file).split(), stdout=DEVNULL)
+    subprocess.run("esl-alimanip -o {} --seq-k {} {}".format(unweighted_msa_sample_file, ss_file, unweighted_msa_file).split(), stdout=subprocess.DEVNULL)
     return unweighted_msa_sample_file
 
 
 def _calculate_sequence_weights(unweighted_msa_file):
-    weighted_msa_file = unweighted_msa_file + "w"
+    weighted_msa_file = unweighted_msa_file + ".w"
     with open(weighted_msa_file, mode="w") as f:
-        run(
+        subprocess.run(
             "esl-weight {}".format(unweighted_msa_file).split(),
             stdout=f,
-            stderr=DEVNULL,
+            stderr=subprocess.DEVNULL,
         )
     return weighted_msa_file
 
 
 def _calculate_information_content(weighted_msa_file):
-    ic_file = weighted_msa_file.rstrip("stow") + "ic"
-    r_file = weighted_msa_file.rstrip("stow") + "r"
-    run(
+    ic_file = weighted_msa_file + ".ic"
+    r_file = weighted_msa_file + ".r"
+    subprocess.run(
         "esl-alistat --icinfo {} --rinfo {} --weight {}".format(
             ic_file, r_file, weighted_msa_file
         ).split(),
-        stdout=DEVNULL,
-        stderr=DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     return ic_file, r_file
 
@@ -97,7 +97,7 @@ def _write_feature(target_file, fasta_file_sequence, feature):
             f.write("\t".join((str(i), k, j)) + "\n")
 
 
-def conservation_hmm(
+def run_conservation_hmm(
     fasta_file, database_file, working_directory, target_file, msa=False, max_seqs=None
 ):
     working_directory = path.join(working_directory, "")    # Ensures that `working_directory` ends with a path delimiter
@@ -144,4 +144,4 @@ if __name__ == "__main__":
     parser.add_argument("--msa", action="store_true")
     parser.add_argument("--max_seqs", type=int)
     args = vars(parser.parse_args())
-    conservation_hmm(**args)
+    run_conservation_hmm(**args)
