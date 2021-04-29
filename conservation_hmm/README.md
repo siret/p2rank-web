@@ -25,6 +25,7 @@ where `FASTA_file`, `database_file`, `working_directory`, and `target_file` are 
  - `database_file` is a sequence database used to construct the multiple sequence alignments (MSAs) based on which the IC is later calculated. It is usually a regular file in a multiple-sequence FASTA format.
  - `working_directory` is a directory in which the MSAs and other temporary files are stored. The temporary files in `working_directory` are **not** cleaned up after the script terminates.
  - `target_file` is the primary output file containing the per-position IC values. For its format and additional information, please see the section below.
+
 `--max_seqs` is an optional argument which can be used to select a random subset of `MAX_SEQS` sequences from the initial (*i.e.*, unweighted) MSA for use in the rest of the pipeline. The pseudorandom number generator used is initialized using a fixed seed, making the sequence subset selection reproducible.
 
 The script `examples/run_examples.sh` presents an example use case. It can be used to calculate the per-position IC values for the `*.fasta` files present in the `examples/` directory, provided that the sequence database `examples/database/uniprot_sprot.fasta` and the directory `examples/working/` exist. **The contents of the `examples/` directory are not required for running the `conservation_hmm.py` script and serve only as a convenient way of showcasing and testing its usage.**
