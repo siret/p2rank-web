@@ -18,25 +18,26 @@ The script `examples/database/download_Swiss-Prot.sh` can be used to download an
 
 Use
 ```
-conservation_hmm.py FASTA_file database_file working_directory target_file
+conservation_hmm.py FASTA_file database_file working_directory target_file [--max_seqs MAX_SEQS]
 ```
 where `FASTA_file`, `database_file`, `working_directory`, and `target_file` are required **positional** arguments with the following specifications:
- - `FASTA_file` is the input sequence in FASTA format. The first line **is assumed** to be the header; the following line or lines are expected to contain the sequence. Only a single header/sequence per file is assumed.
+ - `FASTA_file` is the input sequence in FASTA format. The first line is **assumed** to be the header; the following line or lines are expected to contain the sequence. Only a single header/sequence per file is assumed.
  - `database_file` is a sequence database used to construct the multiple sequence alignments (MSAs) based on which the IC is later calculated. It is usually a regular file in a multiple-sequence FASTA format.
  - `working_directory` is a directory in which the MSAs and other temporary files are stored. The temporary files in `working_directory` are **not** cleaned up after the script terminates.
  - `target_file` is the primary output file containing the per-position IC values. For its format and additional information, please see the section below.
+`--max_seqs` is an optional argument which can be used to select a random subset of `MAX_SEQS` sequences from the initial (*i.e.*, unweighted) MSA for use in the rest of the pipeline. The pseudorandom number generator used is initialized using a fixed seed, making the sequence subset selection reproducible.
 
 The script `examples/run_examples.sh` presents an example use case. It can be used to calculate the per-position IC values for the `*.fasta` files present in the `examples/` directory, provided that the sequence database `examples/database/uniprot_sprot.fasta` and the directory `examples/working/` exist. **The contents of the `examples/` directory are not required for running the `conservation_hmm.py` script and serve only as a convenient way of showcasing and testing its usage.**
 
-Alternatively, to use the `conservation_hmm.py` file as a module, import the `conservation_hmm` function
+Alternatively, to use the `conservation_hmm.py` file as a Python module, import the `run_conservation_hmm` function
 ```
-from conservation_hmm import conservation_hmm
+from conservation_hmm import run_conservation_hmm
 ```
-and call it with the same \(`str`\) arguments as described above
+and call it with the same arguments as described above
 ```
-conservation_hmm(fasta_file, database_file, working_directory, target_file, msa=False)
+run_conservation_hmm(fasta_file, database_file, working_directory, target_file, msa=False, max_seqs=None)
 ```
-The `msa` argument is a flag and can be ignored.
+The `msa` argument is a flag and can be ignored, as it does not do anything yet.
 
 ### Output
 
@@ -44,4 +45,4 @@ When the script terminates, the `target_file` will contain a list of tab-separat
 
 In addition, a `target_file.freqgap` file will be produced, utilizing the same formatting as `target_file`, but containing the frequencies of the gap \(-\) character in the respective MSA columns instead of the per-position IC values.
 
-If no MSA can be generated for the input `FASTA_file` \(*e.g.*, when it contains a synthetic sequence\), HMMER tools will print a message to the standard error stream, and `target_file` and `target_file.freqgap` will contain the value of -1000.0 for their respective per-residue properties.
+If no MSA can be generated for the input `FASTA_file` \(*e.g.*, when it contains a synthetic sequence\), `target_file` and `target_file.freqgap` will contain the value of -1000.0 for their respective per-residue properties.
