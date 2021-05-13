@@ -28,7 +28,7 @@ where `FASTA_file`, `database_file`, `working_directory`, and `target_file` are 
 
 `--max_seqs` is an optional argument which can be used to select a random subset of `MAX_SEQS` sequences from the initial (*i.e.*, unweighted) MSA for use in the rest of the pipeline. The pseudorandom number generator used is initialized using a fixed seed, making the sequence subset selection reproducible.
 
-The script `examples/run_examples.sh` presents an example use case. It can be used to calculate the per-position IC values for the `*.fasta` files present in the `examples/` directory, provided that the sequence database `examples/database/uniprot_sprot.fasta` and the directory `examples/working/` exist. **The contents of the `examples/` directory are not required for running the `conservation_hmm.py` script and serve only as a convenient way of showcasing and testing its usage.**
+The script `examples/run_examples.sh` presents an example use case. It can be used to calculate the per-position IC values for the `*.fasta` files present in the `examples/` directory, provided that the sequence database `examples/database/uniprot_sprot.fasta` and the directory `examples/working/` exist. It also shows how the script `examples/mask_ic_file.py` can be used to mask certain IC values based on the corresponding frequencies of the gap \(-\) character (see below). **The contents of the `examples/` directory are not required for running the `conservation_hmm.py` script and serve only as a convenient way of showcasing and testing its usage.**
 
 Alternatively, to use the `conservation_hmm.py` file as a Python module, import the `run_conservation_hmm` function
 ```
