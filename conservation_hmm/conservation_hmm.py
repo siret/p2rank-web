@@ -7,7 +7,9 @@ import random
 
 
 def _generate_msa(fasta_file, database_file, working_directory):
-    unweighted_msa_file = "{}{}.sto".format(working_directory, fasta_file)
+    unweighted_msa_file = (
+        path.join(working_directory, path.basename(fasta_file)) + ".sto"
+    )
     subprocess.run(
         "phmmer -o /dev/null -A {} {} {}".format(
             unweighted_msa_file, fasta_file, database_file
@@ -110,9 +112,6 @@ def run_conservation_hmm(
     msa=False,
     max_seqs=None,
 ):
-    working_directory = path.join(
-        working_directory, ""
-    )  # Ensures that `working_directory` ends with a path delimiter
     if msa:
         print("Option `--msa` is not yet implemented.")
     unweighted_msa_file = _generate_msa(
