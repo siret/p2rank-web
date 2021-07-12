@@ -1,7 +1,7 @@
 package cz.siret.protein.utils;
 
 import cz.siret.protein.utils.command.Command;
-import cz.siret.protein.utils.command.prepareforp2rank.PrepareForP2Rrank;
+import cz.siret.protein.utils.command.prepareforp2rank.PrepareForP2Rank;
 import cz.siret.protein.utils.command.prepareforprankweb.PrepareForPrankWeb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class ApplicationEntry {
             LoggerFactory.getLogger(ApplicationEntry.class);
 
     private static final List<Command> COMMANDS = Arrays.asList(
-            new PrepareForP2Rrank(),
+            new PrepareForP2Rank(),
             new PrepareForPrankWeb()
     );
 

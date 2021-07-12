@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,16 +31,16 @@ import java.util.stream.Collectors;
 /**
  * Prepare input files for P2Rank.
  */
-public class PrepareForP2Rrank extends Command {
+public class PrepareForP2Rank extends Command {
 
     private static final Logger LOG =
-            LoggerFactory.getLogger(PrepareForP2Rrank.class);
+            LoggerFactory.getLogger(PrepareForP2Rank.class);
 
-    private PrepareForP2RrankConfiguration configuration;
+    private PrepareForP2RankConfiguration configuration;
 
     @Override
     public String getName() {
-        return "PrepareForP2Rrank";
+        return "PrepareForP2Rank";
     }
 
     @Override
@@ -84,7 +83,7 @@ public class PrepareForP2Rrank extends Command {
     }
 
     private void loadConfiguration(CommandLine commandLine) {
-        configuration = new PrepareForP2RrankConfiguration();
+        configuration = new PrepareForP2RankConfiguration();
         configuration.structureFile = new File(
                 commandLine.getOptionValue("input"));
         configuration.outputDirectory = new File(

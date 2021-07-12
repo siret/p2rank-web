@@ -3,7 +3,7 @@ package cz.siret.protein.utils.command.prepareforp2rank;
 import java.io.File;
 import java.util.List;
 
-public class PrepareForP2RrankConfiguration {
+public class PrepareForP2RankConfiguration {
 
     /**
      * Input structure file.

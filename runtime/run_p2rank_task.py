@@ -88,7 +88,7 @@ def prepare_structure(arguments, configuration) -> StructureTuple:
         arguments, configuration["structure"])
     chains = configuration["structure"].get("chains", None)
     execute_command(
-        f"{PROTEIN_UTILS_CMD} PrepareForP2Rrank"
+        f"{PROTEIN_UTILS_CMD} PrepareForP2Rank"
         f" --input {raw_structure_file}"
         f" --output {arguments['working']}"
         + (" --chains=" + ",".join(chains) if chains is not None else ""))
