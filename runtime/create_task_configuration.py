@@ -14,28 +14,23 @@ import json
 
 def _read_arguments() -> typing.Dict[str, str]:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task", required=True,
-                        help="Task identification like 2SRC or 2SRC_A.")
-    parser.add_argument("--conservation", action="store_true",
-                        help="Use conservation.")
-    parser.add_argument("--output", required=True,
-                        help="Output file.")
+    parser.add_argument(
+        "--task", required=True, help="Task identification like 2SRC or 2SRC_A."
+    )
+    parser.add_argument("--conservation", action="store_true", help="Use conservation.")
+    parser.add_argument("--output", required=True, help="Output file.")
     return vars(parser.parse_args())
 
 
 def main(arguments):
     pdb, chains = parse_task_id(arguments["task"])
     result = {
-        "structure": {
-            "code": pdb,
-            "file": None,
-            "chains": chains
-        },
+        "structure": {"code": pdb, "file": None, "chains": chains},
         "conservation": {
             "compute": arguments["conservation"],
             "msaFile": None,
-            "hsspCode": None
-        }
+            "hsspCode": None,
+        },
     }
     with open(arguments["output"], "w", encoding="utf-8") as stream:
         json.dump(result, stream)

@@ -25,16 +25,14 @@ def main(arguments):
             "code": None,
             "file": "structure.pdb",
             "chains": [
-                chain
-                for chain in user_configuration.get("chains", [])
-                if chain != ""
-            ]
+                chain for chain in user_configuration.get("chains", []) if chain != ""
+            ],
         },
         "conservation": {
             "compute": user_configuration.get("conservation", False),
             "msaFile": None,
-            "hsspCode": user_configuration.get("hssp", None)
-        }
+            "hsspCode": user_configuration.get("hssp", None),
+        },
     }
 
     with open(arguments["output"], "w", encoding="utf-8") as stream:

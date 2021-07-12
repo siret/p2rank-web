@@ -51,28 +51,33 @@ class MsaConfiguration:
     execute_blastdb: typing.Callable[[str, str, str], None]
     # Execute psiblast for given files.
     # Arguments: sequences files, output file, log file
-    execute_cdhit: typing.Callable[[str, str, str, ], None]
+    execute_cdhit: typing.Callable[
+        [
+            str,
+            str,
+            str,
+        ],
+        None,
+    ]
     # Execute psiblast for given files.
     # Arguments: input file, output file
     execute_muscle: typing.Callable[[str, str], None]
 
 
-def compute_msa(
-        fasta_file: str, output_file: str, config: MsaConfiguration):
+def compute_msa(fasta_file: str, output_file: str, config: MsaConfiguration):
     blast_input = _prepare_blast_input(fasta_file, config)
     blast_output = os.path.join(config.working_dir, "blast-output")
     _find_similar_sequences(blast_input, blast_output, config)
     muscle_file = os.path.join(config.working_dir, "muscle-output")
-    _compute_msa_for_sequences(
-        blast_input, blast_output, muscle_file, config)
+    _compute_msa_for_sequences(blast_input, blast_output, muscle_file, config)
     _prepare_for_conservation(muscle_file, output_file, config)
     config.maximum_sequences_for_msa = 1
 
 
 # region Prepare Blast input
 
-def _prepare_blast_input(
-        fasta_file: str, config: MsaConfiguration) -> str:
+
+def _prepare_blast_input(fasta_file: str, config: MsaConfiguration) -> str:
     """Prepare FASTA file pro Blast.
 
     Mare sure there is only one sequence in the file. Add recognizable header
@@ -81,13 +86,14 @@ def _prepare_blast_input(
     sequences = _read_fasta_file(fasta_file)
     if len(sequences) != 1:
         raise Exception(
-            "The input file must contains only one sequence not {}"
-                .format(len(sequences)))
-    blast_input = os.path.join(
-        config.working_dir, "input-sequence.fasta")
+            "The input file must contains only one sequence not {}".format(
+                len(sequences)
+            )
+        )
+    blast_input = os.path.join(config.working_dir, "input-sequence.fasta")
     _save_sequence_to_fasta(
-        config.sequence_prefix + sequences[0][0],
-        sequences[0][1], blast_input)
+        config.sequence_prefix + sequences[0][0], sequences[0][1], blast_input
+    )
     return blast_input
 
 
@@ -118,10 +124,12 @@ def _save_sequence_to_fasta(header: str, sequence: str, output_file: str):
 
 
 def _format_fasta_sequence(header: str, sequence: str, line_width: int = 80):
-    lines = '\n'.join([
-        sequence[index:index + line_width]
-        for index in range(0, len(sequence), line_width)
-    ])
+    lines = "\n".join(
+        [
+            sequence[index : index + line_width]
+            for index in range(0, len(sequence), line_width)
+        ]
+    )
     return f">{header}\n{lines}\n"
 
 
@@ -129,33 +137,33 @@ def _format_fasta_sequence(header: str, sequence: str, line_width: int = 80):
 
 # region Find similar sequences
 
+
 def _find_similar_sequences(
-        input_file: str, output_file: str, config: MsaConfiguration):
+    input_file: str, output_file: str, config: MsaConfiguration
+):
     """
     Try to find sufficient amount of similar sequences in databases.
     """
     for database in config.blast_databases:
         found = _find_similar_sequences_in_database(
-            input_file, output_file, config, database)
+            input_file, output_file, config, database
+        )
         if found:
             return
     raise Exception("Not enough similar sequences found!")
 
 
 def _find_similar_sequences_in_database(
-        input_file: str, output_file: str,
-        config: MsaConfiguration, database: str) -> bool:
+    input_file: str, output_file: str, config: MsaConfiguration, database: str
+) -> bool:
     logging.info(
-        "Searching for similar sequences using psiblast on '%s' database ...",
-        database)
+        "Searching for similar sequences using psiblast on '%s' database ...", database
+    )
     psiblast = os.path.join(config.working_dir, "psiblast")
     config.execute_psiblast(input_file, psiblast, database)
-    logging.info(
-        "Filtering result to match required criteria...")
-    psiblast_filtered = os.path.join(
-        config.working_dir, "psiblast-filtered")
-    filtered_count = _filter_psiblast_file(
-        psiblast, psiblast_filtered, config)
+    logging.info("Filtering result to match required criteria...")
+    psiblast_filtered = os.path.join(config.working_dir, "psiblast-filtered")
+    filtered_count = _filter_psiblast_file(psiblast, psiblast_filtered, config)
     if filtered_count < config.minimum_sequence_count:
         logging.info("Not enough sequences.")
         return False
@@ -169,14 +177,12 @@ def _find_similar_sequences_in_database(
     config.execute_cdhit(sequences, cdhit_output_file, cdhit_log_file)
     if not _found_enough_sequences(cdhit_output_file, config):
         return False
-    _select_sequences(
-        cdhit_output_file, output_file,
-        config.maximum_sequences_for_msa)
+    _select_sequences(cdhit_output_file, output_file, config.maximum_sequences_for_msa)
     return True
 
 
 def _filter_psiblast_file(
-        input_file: str, output_file: str, config: MsaConfiguration
+    input_file: str, output_file: str, config: MsaConfiguration
 ) -> int:
     inputs_count = 0
     results_count = 0
@@ -195,8 +201,7 @@ def _filter_psiblast_file(
     return results_count
 
 
-def _found_enough_sequences(
-        fasta_file: str, config: MsaConfiguration) -> bool:
+def _found_enough_sequences(fasta_file: str, config: MsaConfiguration) -> bool:
     counter = 0
     for _, _ in _read_fasta_file(fasta_file):
         counter += 1
@@ -211,10 +216,11 @@ def _select_sequences(input_file: str, output_file: str, count: int):
     sequences = _read_fasta_file(input_file)
     if 0 < count < len(sequences):
         filtered_sequence = [
-            sequences[index] 
-            for index in uniform_sample(0, len(sequences), count)]
-        logging.info("Using %s from %s sequences", 
-            len(filtered_sequence), len(sequences))
+            sequences[index] for index in uniform_sample(0, len(sequences), count)
+        ]
+        logging.info(
+            "Using %s from %s sequences", len(filtered_sequence), len(sequences)
+        )
         sequences = filtered_sequence
     # Write only selected.
     with open(output_file, "w") as out_stream:
@@ -234,9 +240,10 @@ def uniform_sample(start, end, total_count):
 
 # endregion
 
+
 def _compute_msa_for_sequences(
-        fasta_file: str, sequence_file: str, output_file: str,
-        config: MsaConfiguration):
+    fasta_file: str, sequence_file: str, output_file: str, config: MsaConfiguration
+):
     muscle_input = os.path.join(config.working_dir, "muscle-input")
     _merge_files([sequence_file, fasta_file], muscle_input)
     config.execute_muscle(muscle_input, output_file)
@@ -251,7 +258,8 @@ def _merge_files(input_files: typing.List[str], output_file: str):
 
 
 def _prepare_for_conservation(
-        input_file: str, output_file: str, config: MsaConfiguration):
+    input_file: str, output_file: str, config: MsaConfiguration
+):
     """
     Put the marked sequence at the top of the file and change it's header,
     and fix some issues.
@@ -262,18 +270,17 @@ def _prepare_for_conservation(
     for header, sequence in _read_fasta_file(input_file):
         if header.startswith(config.sequence_prefix):
             # We can remove the prefix here
-            first_header = header[len(config.sequence_prefix):]
+            first_header = header[len(config.sequence_prefix) :]
             first_sequence = sequence
             break
 
     if first_header is None:
         raise Exception(
-            "Missing header '" + config.sequence_prefix +
-            "' in " + input_file)
+            "Missing header '" + config.sequence_prefix + "' in " + input_file
+        )
 
     with open(output_file, "w", newline="\n") as out_stream:
-        out_stream.write(
-            _format_fasta_sequence(first_header, first_sequence, 60))
+        out_stream.write(_format_fasta_sequence(first_header, first_sequence, 60))
         for header, sequence in _read_fasta_file(input_file):
             if header.startswith(config.sequence_prefix):
                 continue

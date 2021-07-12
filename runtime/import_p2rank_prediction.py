@@ -18,14 +18,12 @@ import requests
 
 def _read_arguments() -> typing.Dict[str, str]:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input", required=True,
-                        help="Input directory.")
-    parser.add_argument("--output", required=True,
-                        help="Output directory.")
-    parser.add_argument("--conservation", required=False,
-                        help="Directory with conservations..")
-    parser.add_argument("--p2rankUtils", required=True,
-                        help="p2rank utils executable")
+    parser.add_argument("--input", required=True, help="Input directory.")
+    parser.add_argument("--output", required=True, help="Output directory.")
+    parser.add_argument(
+        "--conservation", required=False, help="Directory with conservations.."
+    )
+    parser.add_argument("--p2rankUtils", required=True, help="p2rank utils executable")
     return vars(parser.parse_args())
 
 
@@ -38,7 +36,7 @@ def main(arguments):
         arguments["output"],
         arguments["conservation"],
         "2020-09-30T00:00:01",
-        "id_noconser"
+        "id_noconser",
     )
 
 
@@ -46,13 +44,19 @@ def init_logging(level=logging.DEBUG):
     logging.basicConfig(
         level=level,
         format="%(asctime)s [%(levelname)s] - %(message)s",
-        datefmt="%H:%M:%S")
+        datefmt="%H:%M:%S",
+    )
 
 
 def convert(
-        protein_utils: str, threads: int,
-        input_dir: str, output_dir: str, conservation_dir: str,
-        time: str, template: str):
+    protein_utils: str,
+    threads: int,
+    input_dir: str,
+    output_dir: str,
+    conservation_dir: str,
+    time: str,
+    template: str,
+):
     if conservation_dir is None:
         conservation_files = []
     else:
@@ -63,31 +67,38 @@ def convert(
         logging.info("Converting files in single thread ...")
         for index, pdb_id in enumerate(pdb_ids):
             logging.info("%i/%i : %s", index, len(pdb_ids), pdb_id)
-            convert_pdb_file({
-                "pdb": pdb_id,
-                "input": input_dir,
-                "output": output_dir,
-                "protein-utils": protein_utils,
-                "time": time,
-                "template": template,
-                "conservation": search_conservation(
-                    conservation_files, conservation_dir, pdb_id)
-            })
+            convert_pdb_file(
+                {
+                    "pdb": pdb_id,
+                    "input": input_dir,
+                    "output": output_dir,
+                    "protein-utils": protein_utils,
+                    "time": time,
+                    "template": template,
+                    "conservation": search_conservation(
+                        conservation_files, conservation_dir, pdb_id
+                    ),
+                }
+            )
         logging.info("Converted: %s", len(pdb_ids))
         logging.info("Converting files ... done")
         return
     pool = multiprocessing.Pool(threads)
     logging.info("Converting files in multiple threads (%i) ...", len(pdb_ids))
-    tasks = [{
-        "pdb": pdb_id,
-        "input": input_dir,
-        "output": output_dir,
-        "protein-utils": protein_utils,
-        "time": time,
-        "template": template,
-        "conservation": search_conservation(
-            conservation_files, conservation_dir, pdb_id),
-    } for pdb_id in pdb_ids]
+    tasks = [
+        {
+            "pdb": pdb_id,
+            "input": input_dir,
+            "output": output_dir,
+            "protein-utils": protein_utils,
+            "time": time,
+            "template": template,
+            "conservation": search_conservation(
+                conservation_files, conservation_dir, pdb_id
+            ),
+        }
+        for pdb_id in pdb_ids
+    ]
     pool.map(convert_pdb_file, tasks)
     logging.info("Converted: %s", len(tasks))
     logging.info("Converting files ... done")
@@ -98,12 +109,11 @@ def collect_pdb_ids(input_dir: str):
     for file in os.listdir(input_dir):
         if not file.endswith("_predictions.csv"):
             continue
-        result.add(file[:file.index(".")].lower())
+        result.add(file[: file.index(".")].lower())
     return sorted(list(result))
 
 
-def search_conservation(
-        conservation_files: typing.List[str], directory:str, pdb: str):
+def search_conservation(conservation_files: typing.List[str], directory: str, pdb: str):
     result = {}
     pdb = pdb.lower()
     for file_name in conservation_files:
@@ -132,7 +142,8 @@ def convert_pdb_file(task):
             predictions_file(task["input"], task["pdb"]),
             residues_file(task["input"], task["pdb"]),
             public_dir,
-            task["conservation"])
+            task["conservation"],
+        )
     except:
         logging.error("Can't convert: %s", task["pdb"])
         shutil.rmtree(output_dir)
@@ -146,15 +157,18 @@ def create_stdout(path: str):
 
 def create_status(path: str, task):
     with open(path, "w", encoding="utf-8", newline="\n") as stream:
-        json.dump({
-            "id": task["pdb"].upper(),
-            "created": task["time"],
-            "lastChange": task["time"],
-            "status": "successful",
-            "lastFinishedStep": 1,
-            "stepCount": 1,
-            "template": task["template"]
-        }, stream)
+        json.dump(
+            {
+                "id": task["pdb"].upper(),
+                "created": task["time"],
+                "lastChange": task["time"],
+                "status": "successful",
+                "lastFinishedStep": 1,
+                "stepCount": 1,
+                "template": task["template"],
+            },
+            stream,
+        )
 
 
 def download_structure(path: str, pdb: str):
@@ -192,12 +206,13 @@ def residues_file(input_directory: str, pdb: str) -> str:
 
 
 def prepare_json_files(
-        protein_utils: str,
-        structure_file: str,
-        predictions_file: str,
-        residues_file: str,
-        output_path: str,
-        conservation_map: typing.Dict[str, str]):
+    protein_utils: str,
+    structure_file: str,
+    predictions_file: str,
+    residues_file: str,
+    output_path: str,
+    conservation_map: typing.Dict[str, str],
+):
     output_prediction_file = os.path.join(output_path, "prediction.json")
     output_sequence_file = os.path.join(output_path, "sequence.json")
 
@@ -205,13 +220,15 @@ def prepare_json_files(
     for chain, file in conservation_map.items():
         conservation_args += f" --conservation {chain}={file}"
 
-    command = f"{protein_utils} -a p2rank-web" \
-              f" --structure={structure_file}" \
-              f" --prediction={predictions_file}" \
-              f" --residues={residues_file}" \
-              f" --output-pocket={output_prediction_file}" \
-              f" --output-sequence={output_sequence_file}" \
-              f" {conservation_args}"
+    command = (
+        f"{protein_utils} -a p2rank-web"
+        f" --structure={structure_file}"
+        f" --prediction={predictions_file}"
+        f" --residues={residues_file}"
+        f" --output-pocket={output_prediction_file}"
+        f" --output-sequence={output_sequence_file}"
+        f" {conservation_args}"
+    )
     execute_command(command)
 
 

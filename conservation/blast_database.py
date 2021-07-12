@@ -17,12 +17,9 @@ BLASTDB_USED = os.environ.get("BLASTDB_USED", None)
 
 # For selected databases we store download URL.
 DATABASE_NAME_TO_URL = {
-    "swissprot":
-        "https://p2rank.cz/www/conservation/current/uniprot_sprot.fasta.gz",
-    "uniref50":
-        "https://p2rank.cz/www/conservation/current/uniref50.fasta.gz",
-    "uniref90":
-        "https://p2rank.cz/www/conservation/current/uniref90.fasta.gz"
+    "swissprot": "https://p2rank.cz/www/conservation/current/uniprot_sprot.fasta.gz",
+    "uniref50": "https://p2rank.cz/www/conservation/current/uniref50.fasta.gz",
+    "uniref90": "https://p2rank.cz/www/conservation/current/uniref90.fasta.gz",
 }
 
 DATABASE_FILE_EXTENSIONS = [".phr", ".pin", ".pog", ".psd", ".psi", ".psq"]
@@ -60,8 +57,9 @@ def is_database_available(name: str) -> bool:
     """
     base_name = os.path.join(BLASTDB, name)
     # It may be from multiple files, so check for the first one.
-    return are_database_files_available(base_name) or \
-           are_database_files_available(base_name + ".00")
+    return are_database_files_available(base_name) or are_database_files_available(
+        base_name + ".00"
+    )
 
 
 def are_database_files_available(base_name: str) -> bool:
@@ -73,8 +71,8 @@ def are_database_files_available(base_name: str) -> bool:
 
 
 def prepare_databases(
-        execute_command: typing.Callable[[str], None],
-        names: typing.List[str]):
+    execute_command: typing.Callable[[str], None], names: typing.List[str]
+):
     for name in names:
         if is_database_available(name):
             continue
@@ -85,15 +83,22 @@ def prepare_database(execute_command: typing.Callable[[str], None], name: str):
     if BLASTDMAKEDB_CMD is None:
         raise RuntimeError(
             "Can't create database as environment variable "
-            "BLASTDMAKEDB_CMD is not set.")
+            "BLASTDMAKEDB_CMD is not set."
+        )
     #
     logging.info("Preparing database: %s ...", name)
     url = DATABASE_NAME_TO_URL[name]
     path = os.path.join(BLASTDB, name)
-    command = "curl " + url + " | gunzip | " \
-              + BLASTDMAKEDB_CMD \
-              + " -out " + path + " -title " + name \
-              + " -dbtype prot -parse_seqids"
+    command = (
+        "curl "
+        + url
+        + " | gunzip | "
+        + BLASTDMAKEDB_CMD
+        + " -out "
+        + path
+        + " -title "
+        + name
+        + " -dbtype prot -parse_seqids"
+    )
     execute_command(command)
     logging.info("Preparing database: %s ... done", name)
-
