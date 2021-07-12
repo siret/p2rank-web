@@ -21,7 +21,10 @@
   <p class="text-center">
     <small>
       <span class="glyphicon glyphicon-copyright-mark"></span>
-      PrankWeb, Charles University 2017-2020
+      PrankWeb, Charles University 2017-<span id="year"></span>
+      <script>
+        document.getElementById("year").innerHTML = new Date().getFullYear();
+      </script>
     </small>
   </p>
 </div>
